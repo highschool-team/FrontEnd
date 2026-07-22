@@ -3,6 +3,7 @@ import { useLocation } from 'react-router-dom';
 const PAGE_TITLES = {
   '/integration': '연동 관리',
   '/quota': 'API 할당 제어',
+  '/analytics': '사용량 분석',
   '/audit': '계정 오딧',
   '/routing': '라우팅 정책',
   '/provisioning': '프로비저닝',

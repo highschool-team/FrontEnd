@@ -608,3 +608,49 @@ body {
   font-weight: 600;
   font-size: 14px;
 }
+
+/* ── 분석 페이지 ── */
+.analytics-card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 24px;
+}
+
+.analytics-card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.analytics-card-title {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--text);
+}
+
+.chart-controls {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.chart-tooltip {
+  background: #fff;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 10px 14px;
+  font-size: 13px;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.1);
+  line-height: 1.8;
+}
+
+.tooltip-label {
+  font-weight: 700;
+  color: var(--text);
+  margin-bottom: 4px;
+  font-size: 12px;
+}

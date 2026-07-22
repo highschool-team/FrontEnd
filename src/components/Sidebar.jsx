@@ -13,6 +13,11 @@ const GaugeIcon = () => (
     <circle cx="18" cy="6" r="3" fill="currentColor" stroke="none" />
   </svg>
 );
+const ChartIcon = () => (
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="nav-icon">
+    <polyline points="22 12 18 12 15 21 9 3 6 12 2 12" />
+  </svg>
+);
 const ShieldIcon = () => (
   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="nav-icon">
     <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
@@ -38,6 +43,7 @@ const UsersIcon = () => (
 const navItems = [
   { to: '/integration', label: '연동 관리', Icon: PlugIcon },
   { to: '/quota', label: 'API 할당 제어', Icon: GaugeIcon },
+  { to: '/analytics', label: '분석', Icon: ChartIcon },
   { to: '/audit', label: '계정 오딧', Icon: ShieldIcon },
   { to: '/routing', label: '라우팅 정책', Icon: RouteIcon },
   { to: '/provisioning', label: '프로비저닝', Icon: UsersIcon },

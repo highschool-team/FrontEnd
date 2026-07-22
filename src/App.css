@@ -909,3 +909,250 @@ body {
   margin-right: 4px;
   vertical-align: middle;
 }
+
+/* ── 보안 모니터링 페이지 ── */
+.sec-live-banner {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 16px;
+  background: #fce8e6;
+  border: 1px solid #f5c6c3;
+  border-radius: 10px;
+  font-size: 13px;
+  font-weight: 600;
+  color: #ea4335;
+  margin-bottom: 20px;
+}
+.sec-live-dot {
+  width: 8px; height: 8px;
+  border-radius: 50%;
+  background: #ea4335;
+  flex-shrink: 0;
+  animation: pulse-red 1s infinite;
+}
+@keyframes pulse-red {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(234,67,53,0.5); }
+  50%       { box-shadow: 0 0 0 6px rgba(234,67,53,0); }
+}
+
+/* 알림 피드 */
+.sec-alert-list {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  max-height: 420px;
+  overflow-y: auto;
+}
+.sec-alert-row {
+  display: grid;
+  grid-template-columns: 10px 70px 90px 1fr 140px 90px;
+  gap: 12px;
+  align-items: center;
+  padding: 11px 6px;
+  border-radius: 8px;
+  border-bottom: 1px solid #f1f3f4;
+  transition: background 0.12s;
+}
+.sec-alert-row:last-child { border-bottom: none; }
+.sec-alert-row:hover { background: #fafafa; }
+.sec-alert-row--critical { background: #fff5f5; }
+.sec-alert-row--critical:hover { background: #fee; }
+
+.sec-alert-dot {
+  width: 8px; height: 8px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+.sec-alert-time { font-size: 12px; color: #80868b; font-variant-numeric: tabular-nums; }
+.sec-sev-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 2px 8px;
+  border-radius: 20px;
+  font-size: 11px;
+  font-weight: 700;
+  white-space: nowrap;
+  letter-spacing: 0.3px;
+}
+.sec-alert-body {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+.sec-alert-type { font-size: 13px; font-weight: 600; color: #202124; }
+.sec-alert-detail { font-size: 12px; color: #5f6368; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.sec-alert-source {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  color: #5f6368;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.sec-status-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 3px 9px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+/* 차단 IP 테이블 */
+.sec-ip-table {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  overflow: hidden;
+}
+.sec-ip-header {
+  display: grid;
+  grid-template-columns: 150px 180px 90px 110px 90px 1fr;
+  gap: 12px;
+  padding: 10px 18px;
+  background: #f8f9fa;
+  border-bottom: 1px solid var(--border);
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--sub);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+.sec-ip-row {
+  display: grid;
+  grid-template-columns: 150px 180px 90px 110px 90px 1fr;
+  gap: 12px;
+  padding: 13px 18px;
+  align-items: center;
+  border-bottom: 1px solid #f1f3f4;
+}
+.sec-ip-row:last-child { border-bottom: none; }
+.sec-ip-addr { font-size: 13px; font-weight: 700; font-family: monospace; }
+.sec-unblock-btn {
+  padding: 5px 12px;
+  border-radius: 8px;
+  border: none;
+  background: var(--green-light);
+  color: var(--green);
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background 0.12s;
+  justify-self: start;
+}
+.sec-unblock-btn:hover { background: #b7d9b3; }
+
+/* 토큰 이상 감지 테이블 */
+.sec-anomaly-table {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  overflow: hidden;
+}
+.sec-anomaly-header {
+  display: grid;
+  grid-template-columns: 160px 130px 150px 150px 90px 110px;
+  gap: 12px;
+  padding: 10px 18px;
+  background: #f8f9fa;
+  border-bottom: 1px solid var(--border);
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--sub);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+.sec-anomaly-row {
+  display: grid;
+  grid-template-columns: 160px 130px 150px 150px 90px 110px;
+  gap: 12px;
+  padding: 14px 18px;
+  align-items: center;
+  border-bottom: 1px solid #f1f3f4;
+}
+.sec-anomaly-row:last-child { border-bottom: none; }
+
+/* ── 팀원 사용량 테이블 ── */
+.member-table {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.member-table-header {
+  display: grid;
+  grid-template-columns: 140px 120px 1fr 180px;
+  gap: 12px;
+  padding: 10px 18px;
+  background: #f8f9fa;
+  border-bottom: 1px solid var(--border);
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--sub);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.member-row {
+  display: grid;
+  grid-template-columns: 140px 120px 1fr 180px;
+  gap: 12px;
+  padding: 12px 18px;
+  align-items: center;
+  border-bottom: 1px solid #f1f3f4;
+}
+.member-row:last-child { border-bottom: none; }
+
+.member-name {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: 600;
+  font-size: 13px;
+}
+
+.member-contribution {
+  font-size: 13px;
+  color: var(--sub);
+  font-weight: 500;
+}
+
+/* ── 역할 전환 (TopBar) ── */
+.role-switcher {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  position: relative;
+}
+
+.role-badge {
+  padding: 4px 10px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.role-select {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  cursor: pointer;
+  width: 100%;
+  font-size: 14px;
+}
+
+.role-chevron {
+  width: 16px;
+  height: 16px;
+  color: var(--sub);
+  pointer-events: none;
+  flex-shrink: 0;
+}

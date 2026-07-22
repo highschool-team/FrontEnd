@@ -169,6 +169,7 @@ body {
 .stat-value.red { color: var(--red); }
 .stat-value.orange { color: var(--orange); }
 .stat-value.gray { color: var(--gray); }
+.stat-value.purple { color: var(--purple); }
 
 /* ── 상태 뱃지 ── */
 .status-badge {
@@ -653,4 +654,67 @@ body {
   color: var(--text);
   margin-bottom: 4px;
   font-size: 12px;
+}
+
+/* ── 예측 차트 전용 ── */
+.pred-subtitle {
+  font-size: 12px;
+  font-weight: 400;
+  color: var(--sub);
+}
+
+.pred-banner {
+  padding: 10px 16px;
+  border-radius: 10px;
+  font-size: 13px;
+  margin-bottom: 18px;
+}
+.pred-banner--warn {
+  background: var(--red-light);
+  color: var(--red);
+  border: 1px solid #f5c6c3;
+}
+.pred-banner--ok {
+  background: var(--green-light);
+  color: #1e6e3c;
+  border: 1px solid #b7d9b3;
+}
+
+.pred-legend-note {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-top: 16px;
+  font-size: 12px;
+  color: var(--sub);
+  flex-wrap: wrap;
+}
+
+.legend-line {
+  display: inline-block;
+  width: 28px;
+  height: 2px;
+  border-radius: 1px;
+  margin-right: 4px;
+  vertical-align: middle;
+}
+.legend-solid { background: #1a73e8; }
+.legend-dashed {
+  background: transparent;
+  border-top: 2px dashed #1a73e8;
+  opacity: 0.75;
+}
+.legend-conf {
+  background: transparent;
+  border-top: 2px dashed #93c5fd;
+}
+.legend-bg {
+  display: inline-block;
+  width: 20px;
+  height: 14px;
+  background: #f8f9fa;
+  border: 1px solid #e0e0e0;
+  border-radius: 3px;
+  margin-right: 4px;
+  vertical-align: middle;
 }

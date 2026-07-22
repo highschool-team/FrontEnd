@@ -1,4 +1,5 @@
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
+import { IntegrationProvider } from './context/IntegrationContext';
 import Sidebar from './components/Sidebar';
 import TopBar from './components/TopBar';
 import IntegrationPage from './pages/IntegrationPage';
@@ -11,6 +12,7 @@ import './App.css';
 
 export default function App() {
   return (
+    <IntegrationProvider>
     <BrowserRouter>
       <div className="layout">
         <Sidebar />
@@ -30,5 +32,6 @@ export default function App() {
         </div>
       </div>
     </BrowserRouter>
+    </IntegrationProvider>
   );
 }

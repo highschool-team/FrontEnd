@@ -1,5 +1,6 @@
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { IntegrationProvider } from './context/IntegrationContext';
+import { UserProvider } from './context/UserContext';
 import Sidebar from './components/Sidebar';
 import TopBar from './components/TopBar';
 import IntegrationPage from './pages/IntegrationPage';
@@ -8,10 +9,12 @@ import AccountAuditPage from './pages/AccountAuditPage';
 import RoutingPolicyPage from './pages/RoutingPolicyPage';
 import AnalyticsPage from './pages/AnalyticsPage';
 import ProvisioningPage from './pages/ProvisioningPage';
+import SecurityPage from './pages/SecurityPage';
 import './App.css';
 
 export default function App() {
   return (
+    <UserProvider>
     <IntegrationProvider>
     <BrowserRouter>
       <div className="layout">
@@ -27,11 +30,13 @@ export default function App() {
               <Route path="/audit" element={<AccountAuditPage />} />
               <Route path="/routing" element={<RoutingPolicyPage />} />
               <Route path="/provisioning" element={<ProvisioningPage />} />
+              <Route path="/security" element={<SecurityPage />} />
             </Routes>
           </main>
         </div>
       </div>
     </BrowserRouter>
     </IntegrationProvider>
+    </UserProvider>
   );
 }

@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useIntegration } from '../context/IntegrationContext';
 
 /* ── 전체 카탈로그 ── */
 const CATALOG = [
@@ -29,12 +30,9 @@ const TABS = [
   { key: 'dev', label: '개발 도구' },
 ];
 
-const DEFAULT_ADDED = new Set(['google', 'slack', 'figma', 'notion', 'github', 'jira', 'openai', 'claude', 'gemini']);
-
 export default function IntegrationPage() {
-  const [added, setAdded]         = useState(DEFAULT_ADDED);
-  const [connected, setConnected] = useState(new Set(['google', 'slack', 'figma']));
-  const [loading, setLoading]     = useState(new Set());
+  const { added, setAdded, connected, setConnected } = useIntegration();
+  const [loading, setLoading] = useState(new Set());
   const [category, setCategory]   = useState('all');
   const [showModal, setShowModal] = useState(false);
   const [modalCat, setModalCat]   = useState('all');

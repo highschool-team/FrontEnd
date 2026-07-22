@@ -1,4 +1,5 @@
 import { useState, useMemo } from 'react';
+import { useIntegration } from '../context/IntegrationContext';
 import {
   ComposedChart, AreaChart, Area, Line,
   BarChart, Bar,
@@ -108,6 +109,11 @@ export default function AnalyticsPage() {
   const [period, setPeriod] = useState('daily');
   const [metric, setMetric] = useState('calls');
 
+  const { connected } = useIntegration();
+  const showOpenAI    = connected.has('openai');
+  const showAnthropic = connected.has('claude');
+  const showGemini    = connected.has('gemini');
+
   const periodObj = PERIODS.find((p) => p.key === period);
   const rawData = periodObj.data;
   const nowIdx = NOW_IDX[period];
@@ -116,7 +122,9 @@ export default function AnalyticsPage() {
 
   /* ── 예측 데이터 계산 ── */
   const { predChartData, predictedTotal, exceededAt, actualSoFar } = useMemo(() => {
-    const getVal = (d) => isCost ? d.비용 : d.OpenAI + d.Anthropic + d.Gemini;
+    const getVal = (d) => isCost
+      ? d.비용
+      : (showOpenAI ? d.OpenAI : 0) + (showAnthropic ? d.Anthropic : 0) + (showGemini ? d.Gemini : 0);
     const actualValues = rawData.slice(0, nowIdx + 1).map(getVal);
     const predict = buildLinearRegression(actualValues);
     const CONF = 0.12;
@@ -161,7 +169,8 @@ export default function AnalyticsPage() {
 
   /* 기간 설명 */
   const periodDesc = { daily: '오늘', weekly: '이번 주', monthly: '이번 달' }[period];
-  const totalCalls = rawData.reduce((s, d) => s + d.OpenAI + d.Anthropic + d.Gemini, 0);
+  const totalCalls = rawData.reduce((s, d) =>
+    s + (showOpenAI ? d.OpenAI : 0) + (showAnthropic ? d.Anthropic : 0) + (showGemini ? d.Gemini : 0), 0);
   const totalCost = rawData.reduce((s, d) => s + d.비용, 0);
   const peakOpenAI = Math.max(...rawData.map((d) => d.OpenAI));
   const peakPoint = rawData.find((d) => d.OpenAI === peakOpenAI)?.name ?? '-';
@@ -206,7 +215,9 @@ export default function AnalyticsPage() {
         </div>
         <div className="stat-card">
           <span className="stat-value purple">
-            {((rawData.reduce((s, d) => s + d.Gemini, 0) / totalCalls) * 100).toFixed(1)}%
+            {totalCalls > 0 && showGemini
+              ? ((rawData.reduce((s, d) => s + d.Gemini, 0) / totalCalls) * 100).toFixed(1) + '%'
+              : '—'}
           </span>
           <span className="stat-label">Gemini 비중</span>
         </div>
@@ -248,9 +259,9 @@ export default function AnalyticsPage() {
               formatter={(v, name) => [`${v.toLocaleString()}건`, name]}
             />
             <Legend wrapperStyle={{ fontSize: 13, paddingTop: 10 }} iconType="circle" iconSize={8} />
-            <Area type="monotone" dataKey="OpenAI" stroke="#1a73e8" strokeWidth={2} fill="url(#gradOAI)" dot={false} activeDot={{ r: 4 }} />
-            <Area type="monotone" dataKey="Anthropic" stroke="#d97757" strokeWidth={2} fill="url(#gradANT)" dot={false} activeDot={{ r: 4 }} />
-            <Area type="monotone" dataKey="Gemini" stroke="#7c3aed" strokeWidth={2} fill="url(#gradGEM)" dot={false} activeDot={{ r: 4 }} />
+            {showOpenAI    && <Area type="monotone" dataKey="OpenAI"    stroke="#1a73e8" strokeWidth={2} fill="url(#gradOAI)" dot={false} activeDot={{ r: 4 }} />}
+            {showAnthropic && <Area type="monotone" dataKey="Anthropic" stroke="#d97757" strokeWidth={2} fill="url(#gradANT)" dot={false} activeDot={{ r: 4 }} />}
+            {showGemini    && <Area type="monotone" dataKey="Gemini"    stroke="#7c3aed" strokeWidth={2} fill="url(#gradGEM)" dot={false} activeDot={{ r: 4 }} />}
           </AreaChart>
         </ResponsiveContainer>
       </div>
@@ -410,9 +421,9 @@ export default function AnalyticsPage() {
               contentStyle={{ borderRadius: 10, border: '1px solid #e0e0e0', fontSize: 13 }}
             />
             <Legend wrapperStyle={{ fontSize: 13, paddingTop: 10 }} iconType="circle" iconSize={8} />
-            <Bar dataKey="OpenAI" fill="#1a73e8" radius={[4, 4, 0, 0]} maxBarSize={32} />
-            <Bar dataKey="Anthropic" fill="#d97757" radius={[4, 4, 0, 0]} maxBarSize={32} />
-            <Bar dataKey="Gemini" fill="#7c3aed" radius={[4, 4, 0, 0]} maxBarSize={32} />
+            {showOpenAI    && <Bar dataKey="OpenAI"    fill="#1a73e8" radius={[4, 4, 0, 0]} maxBarSize={32} />}
+            {showAnthropic && <Bar dataKey="Anthropic" fill="#d97757" radius={[4, 4, 0, 0]} maxBarSize={32} />}
+            {showGemini    && <Bar dataKey="Gemini"    fill="#7c3aed" radius={[4, 4, 0, 0]} maxBarSize={32} />}
           </BarChart>
         </ResponsiveContainer>
       </div>

@@ -51,10 +51,11 @@ const MONTHLY = Array.from({ length: 30 }, (_, i) => {
 });
 
 const TEAM_DATA = [
-  { name: '프론트엔드팀', OpenAI: 12400, Anthropic: 3100, Gemini: 5800 },
-  { name: '백엔드팀',     OpenAI: 8200,  Anthropic: 11300, Gemini: 2100 },
-  { name: '데이터팀',     OpenAI: 21500, Anthropic: 4800,  Gemini: 9300 },
-  { name: 'QA팀',         OpenAI: 3100,  Anthropic: 900,   Gemini: 1400 },
+  { name: '프론트엔드팀',  OpenAI: 12400, Anthropic: 3100,  Gemini: 5800 },
+  { name: '백엔드팀',      OpenAI: 8200,  Anthropic: 11300, Gemini: 2100 },
+  { name: '데이터팀',      OpenAI: 21500, Anthropic: 4800,  Gemini: 9300 },
+  { name: 'QA팀',          OpenAI: 3100,  Anthropic: 900,   Gemini: 1400 },
+  { name: '모바일 앱 팀',  OpenAI: 2800,  Anthropic: 6200,  Gemini: 1100 },
 ];
 
 const PERIODS = [
@@ -92,13 +93,19 @@ const TEAM_MEMBER_USAGE = {
     { name: '김철수', calls: 9200,  cost: 9.8,  callLimit: 10000, costLimit: 10 },
     { name: '이민지', calls: 7800,  cost: 8.3,  callLimit: 10000, costLimit: 10 },
   ],
+  '모바일 앱 팀': [
+    { name: '송지훈', calls: 2600,  cost: 3.1,  callLimit: 13300, costLimit: 13.3 },
+    { name: '배수연', calls: 2000,  cost: 2.4,  callLimit: 13300, costLimit: 13.3 },
+    { name: '오태양', calls: 1000,  cost: 1.2,  callLimit: 13300, costLimit: 13.3 },
+  ],
 };
 
 const TEAM_RATIO = {
-  '프론트엔드팀': 0.28,
-  '백엔드팀':     0.22,
-  '데이터팀':     0.38,
-  'QA팀':         0.12,
+  '프론트엔드팀': 0.24,
+  '백엔드팀':     0.20,
+  '데이터팀':     0.35,
+  'QA팀':         0.11,
+  '모바일 앱 팀': 0.10,
 };
 
 const MEMBER_RATIO = {
@@ -106,6 +113,7 @@ const MEMBER_RATIO = {
   '이영희': 0.090, '윤재원': 0.066, '강민서': 0.051,
   '홍길동': 0.090, '임채원': 0.054,
   '김철수': 0.085, '이민지': 0.072,
+  '송지훈': 0.028, '배수연': 0.022, '오태양': 0.011,
 };
 
 /* ── 선형 회귀 ── */

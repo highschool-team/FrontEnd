@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <title>FinOps Guard — 시스템 아키텍처</title>
+  <style>
+    body {
+      margin: 0;
+      background: #f0f4f8;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 32px 24px;
+      font-family: 'Segoe UI', Arial, sans-serif;
+    }
+    svg { filter: drop-shadow(0 4px 24px rgba(0,0,0,0.10)); border-radius: 16px; }
+  </style>
+</head>
+<body>
+<svg width="980" height="680" xmlns="http://www.w3.org/2000/svg" font-family="'Segoe UI', Arial, sans-serif">
+  <defs>
+    <marker id="arr" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto">
+      <polygon points="0 0, 8 3, 0 6" fill="#94a3b8"/>
+    </marker>
+    <marker id="arr-purple" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto">
+      <polygon points="0 0, 8 3, 0 6" fill="#6366f1"/>
+    </marker>
+    <marker id="arr-red" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto">
+      <polygon points="0 0, 8 3, 0 6" fill="#ef4444"/>
+    </marker>
+    <marker id="arr-green" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto">
+      <polygon points="0 0, 8 3, 0 6" fill="#16a34a"/>
+    </marker>
+  </defs>
+
+  <!-- ── 배경 ── -->
+  <rect width="980" height="680" fill="#f8fafc" rx="16"/>
+
+  <!-- ── 제목 ── -->
+  <text x="490" y="26" text-anchor="middle" font-size="17" font-weight="700" fill="#0f172a">FinOps Guard — 시스템 아키텍처</text>
+
+  <!-- ══════════════════════════════════════
+       클라이언트 (브라우저)
+  ══════════════════════════════════════ -->
+  <rect x="340" y="36" width="300" height="54" rx="10" fill="#dbeafe" stroke="#93c5fd" stroke-width="1.5"/>
+  <text x="490" y="58" text-anchor="middle" font-size="13" font-weight="700" fill="#1d4ed8">🌐 브라우저 / React SPA</text>
+  <text x="490" y="76" text-anchor="middle" font-size="10.5" fill="#3b82f6">HTTPS /api/*  ·  WebSocket /ws/*</text>
+
+  <!-- ══════════════════════════════════════
+       Vercel (왼쪽 상단)
+  ══════════════════════════════════════ -->
+  <rect x="42" y="36" width="240" height="110" rx="12" fill="#f0fdf4" stroke="#4ade80" stroke-width="2"/>
+  <!-- Vercel 라벨 배경 -->
+  <rect x="42" y="24" width="90" height="22" rx="5" fill="#000000"/>
+  <text x="87" y="39" text-anchor="middle" font-size="11" fill="white" font-weight="700">▲ Vercel</text>
+  <text x="162" y="62" text-anchor="middle" font-size="12" font-weight="700" fill="#15803d">CDN (글로벌 엣지)</text>
+  <text x="162" y="80" text-anchor="middle" font-size="10.5" fill="#166534">React SPA 정적 파일 호스팅</text>
+  <text x="162" y="97" text-anchor="middle" font-size="10" fill="#16a34a">index.html · JS · CSS</text>
+  <text x="162" y="113" text-anchor="middle" font-size="10" fill="#16a34a">자동 빌드 · 글로벌 CDN 배포</text>
+  <text x="162" y="129" text-anchor="middle" font-size="10" fill="#16a34a">도메인 SSL 자동 관리</text>
+
+  <!-- Vercel → Browser (SPA 전달) -->
+  <line x1="282" y1="72" x2="340" y2="64" stroke="#4ade80" stroke-width="1.5" marker-end="url(#arr-green)"/>
+  <rect x="285" y="58" width="52" height="14" rx="3" fill="#dcfce7"/>
+  <text x="311" y="69" text-anchor="middle" font-size="9" fill="#15803d" font-weight="600">SPA 전달</text>
+
+  <!-- Browser → Nginx: HTTPS API -->
+  <line x1="458" y1="90" x2="390" y2="118" stroke="#94a3b8" stroke-width="1.5" marker-end="url(#arr)"/>
+  <rect x="398" y="97" width="56" height="14" rx="3" fill="#e2e8f0"/>
+  <text x="426" y="108" text-anchor="middle" font-size="9" fill="#475569">HTTPS /api/*</text>
+
+  <!-- Browser → Nginx: WebSocket -->
+  <line x1="522" y1="90" x2="540" y2="118" stroke="#16a34a" stroke-width="1.5" stroke-dasharray="4,2" marker-end="url(#arr-green)"/>
+  <rect x="527" y="97" width="40" height="14" rx="3" fill="#dcfce7"/>
+  <text x="547" y="108" text-anchor="middle" font-size="9" fill="#15803d" font-weight="600">WS /ws/*</text>
+
+  <!-- ══════════════════════════════════════
+       AWS EC2 인스턴스
+  ══════════════════════════════════════ -->
+  <rect x="310" y="116" width="448" height="440" rx="14" fill="#fffbf5" stroke="#FF9900" stroke-width="2"/>
+  <rect x="310" y="104" width="162" height="22" rx="5" fill="#FF9900"/>
+  <text x="391" y="119" text-anchor="middle" font-size="11" fill="white" font-weight="700">☁ AWS EC2 인스턴스</text>
+
+  <!-- Docker Compose -->
+  <rect x="324" y="142" width="420" height="408" rx="12" fill="none" stroke="#cbd5e1" stroke-width="1.5" stroke-dasharray="8,4"/>
+  <rect x="324" y="130" width="138" height="18" rx="4" fill="#fffbf5"/>
+  <text x="393" y="143" text-anchor="middle" font-size="10" fill="#64748b" font-weight="600">🐳 Docker Compose</text>
+
+  <!-- ══ Nginx (API 전용) ══ -->
+  <rect x="338" y="155" width="392" height="68" rx="10" fill="#dcfce7" stroke="#86efac" stroke-width="1.5"/>
+  <text x="534" y="177" text-anchor="middle" font-size="13" font-weight="700" fill="#15803d">⚙  Nginx — API 리버스 프록시</text>
+  <text x="534" y="195" text-anchor="middle" font-size="11" fill="#166534">SSL 종료  ·  Rate Limiting  ·  Gzip</text>
+  <text x="534" y="211" text-anchor="middle" font-size="11" fill="#166534">/api/*  →  Django      /ws/*  →  Django Channels</text>
+
+  <!-- Nginx → Django -->
+  <line x1="534" y1="223" x2="534" y2="244" stroke="#94a3b8" stroke-width="1.5" marker-end="url(#arr)"/>
+
+  <!-- ══ Django ══ -->
+  <rect x="338" y="246" width="392" height="108" rx="10" fill="#fff7ed" stroke="#fdba74" stroke-width="1.5"/>
+  <text x="534" y="267" text-anchor="middle" font-size="11" font-weight="700" fill="#c2410c">🔧 Gunicorn + Django REST Framework</text>
+
+  <!-- Django Channels 라벨 -->
+  <rect x="554" y="272" width="164" height="18" rx="4" fill="#dcfce7" stroke="#86efac" stroke-width="1"/>
+  <text x="636" y="285" text-anchor="middle" font-size="9" fill="#15803d" font-weight="700">📡 Django Channels (WebSocket)</text>
+
+  <!-- Proxy Gateway -->
+  <rect x="350" y="272" width="192" height="74" rx="8" fill="#fef3c7" stroke="#fcd34d" stroke-width="1.5"/>
+  <text x="446" y="292" text-anchor="middle" font-size="11" font-weight="700" fill="#92400e">🔀 Proxy Gateway</text>
+  <text x="446" y="309" text-anchor="middle" font-size="10" fill="#78350f">한도 체크 → 모델 검증</text>
+  <text x="446" y="325" text-anchor="middle" font-size="10" fill="#78350f">AI 포워딩 · 이벤트 publish</text>
+  <text x="446" y="341" text-anchor="middle" font-size="10" fill="#78350f">비용 계산 → Redis 차감</text>
+
+  <!-- ══ 보안 이벤트 경로 (Proxy → Redis Streams) ══ -->
+  <path d="M 480 354 L 480 368 L 668 368 L 668 388" fill="none" stroke="#ef4444" stroke-width="2" stroke-dasharray="5,3" marker-end="url(#arr-red)"/>
+  <rect x="500" y="357" width="90" height="15" rx="3" fill="#fee2e2"/>
+  <text x="545" y="368" text-anchor="middle" font-size="9" fill="#dc2626" font-weight="700">🔴 보안 이벤트 XADD</text>
+
+  <!-- 일반 데이터 흐름 화살표들 -->
+  <line x1="420" y1="354" x2="380" y2="388" stroke="#94a3b8" stroke-width="1.5" marker-end="url(#arr)"/>
+  <text x="388" y="378" font-size="9" fill="#94a3b8">usage 로그</text>
+
+  <line x1="460" y1="354" x2="495" y2="388" stroke="#94a3b8" stroke-width="1.5" marker-end="url(#arr)"/>
+  <text x="495" y="378" font-size="9" fill="#94a3b8">한도 체크</text>
+
+  <!-- ══ 데이터 레이어 (4개) ══ -->
+
+  <!-- MongoDB -->
+  <rect x="338" y="390" width="128" height="78" rx="10" fill="#fce7f3" stroke="#f9a8d4" stroke-width="1.5"/>
+  <text x="402" y="411" text-anchor="middle" font-size="11" font-weight="700" fill="#9d174d">🍃 MongoDB</text>
+  <text x="402" y="428" text-anchor="middle" font-size="9" fill="#be185d">usage_logs · teams</text>
+  <text x="402" y="442" text-anchor="middle" font-size="9" fill="#be185d">security_alerts</text>
+  <text x="402" y="456" text-anchor="middle" font-size="9" fill="#be185d">budget_configs</text>
+
+  <!-- Redis (캐시) -->
+  <rect x="476" y="390" width="128" height="78" rx="10" fill="#fce7f3" stroke="#f9a8d4" stroke-width="1.5"/>
+  <text x="540" y="411" text-anchor="middle" font-size="11" font-weight="700" fill="#9d174d">⚡ Redis</text>
+  <text x="540" y="428" text-anchor="middle" font-size="9" fill="#be185d">실시간 한도 체크</text>
+  <text x="540" y="442" text-anchor="middle" font-size="9" fill="#be185d">team:{id}:spent</text>
+  <text x="540" y="456" text-anchor="middle" font-size="9" fill="#be185d">세션 · Rate Limiter</text>
+
+  <!-- Celery -->
+  <rect x="476" y="478" width="128" height="64" rx="10" fill="#fce7f3" stroke="#f9a8d4" stroke-width="1.5"/>
+  <text x="540" y="498" text-anchor="middle" font-size="11" font-weight="700" fill="#9d174d">⏰ Celery</text>
+  <text x="540" y="514" text-anchor="middle" font-size="9" fill="#be185d">이벤트 consume</text>
+  <text x="540" y="528" text-anchor="middle" font-size="9" fill="#be185d">예산 초기화 · 분석</text>
+
+  <!-- Redis Streams (브로커) -->
+  <rect x="614" y="390" width="122" height="152" rx="10" fill="#fff1f2" stroke="#ef4444" stroke-width="2"/>
+  <text x="675" y="412" text-anchor="middle" font-size="11" font-weight="700" fill="#dc2626">🔴 Redis</text>
+  <text x="675" y="427" text-anchor="middle" font-size="11" font-weight="700" fill="#dc2626">Streams</text>
+  <text x="675" y="446" text-anchor="middle" font-size="9" fill="#b91c1c">보안 이벤트 브로커</text>
+  <text x="675" y="461" text-anchor="middle" font-size="9" fill="#b91c1c">XADD · XREAD</text>
+  <text x="675" y="476" text-anchor="middle" font-size="9" fill="#b91c1c">Consumer Groups</text>
+  <text x="675" y="494" text-anchor="middle" font-size="8.5" fill="#9ca3af">────────────</text>
+  <text x="675" y="508" text-anchor="middle" font-size="8.5" fill="#6b7280">→ Kafka로</text>
+  <text x="675" y="520" text-anchor="middle" font-size="8.5" fill="#6b7280">교체 가능</text>
+
+  <!-- Redis Streams → MongoDB (persist) -->
+  <line x1="614" y1="430" x2="466" y2="430" stroke="#ef4444" stroke-width="1.5" stroke-dasharray="4,2" marker-end="url(#arr-red)"/>
+  <text x="540" y="424" text-anchor="middle" font-size="8.5" fill="#dc2626">persist</text>
+
+  <!-- Redis Streams → Celery (analyze) -->
+  <line x1="614" y1="500" x2="604" y2="500" stroke="#ef4444" stroke-width="1.5" stroke-dasharray="4,2" marker-end="url(#arr-red)"/>
+
+  <!-- Redis Streams → Django Channels (WS push) -->
+  <path d="M 650 390 L 650 282 L 718 282" fill="none" stroke="#16a34a" stroke-width="1.5" stroke-dasharray="4,2" marker-end="url(#arr-green)"/>
+  <rect x="656" y="316" width="66" height="28" rx="4" fill="#dcfce7"/>
+  <text x="689" y="330" text-anchor="middle" font-size="9" fill="#15803d" font-weight="600">consume →</text>
+  <text x="689" y="341" text-anchor="middle" font-size="9" fill="#15803d" font-weight="600">WS push</text>
+
+  <!-- Celery → MongoDB (연결) -->
+  <line x1="476" y1="505" x2="466" y2="456" stroke="#94a3b8" stroke-width="1" stroke-dasharray="3,2" marker-end="url(#arr)"/>
+
+  <!-- ══ 외부 AI 제공사 ══ -->
+  <rect x="776" y="175" width="185" height="282" rx="12" fill="#ede9fe" stroke="#c4b5fd" stroke-width="1.5" stroke-dasharray="6,3"/>
+  <text x="868" y="195" text-anchor="middle" font-size="10" fill="#7c3aed" font-weight="700">외부 AI 제공사</text>
+
+  <rect x="786" y="202" width="165" height="65" rx="10" fill="#e0e7ff" stroke="#a5b4fc" stroke-width="1.5"/>
+  <text x="868" y="224" text-anchor="middle" font-size="12" font-weight="700" fill="#3730a3">OpenAI API</text>
+  <text x="868" y="241" text-anchor="middle" font-size="10" fill="#4338ca">GPT-4o · GPT-4o-mini</text>
+  <text x="868" y="257" text-anchor="middle" font-size="10" fill="#4338ca">GPT-3.5-turbo</text>
+
+  <rect x="786" y="284" width="165" height="65" rx="10" fill="#e0e7ff" stroke="#a5b4fc" stroke-width="1.5"/>
+  <text x="868" y="306" text-anchor="middle" font-size="12" font-weight="700" fill="#3730a3">Anthropic API</text>
+  <text x="868" y="323" text-anchor="middle" font-size="10" fill="#4338ca">Claude 3 Opus · Sonnet</text>
+  <text x="868" y="339" text-anchor="middle" font-size="10" fill="#4338ca">Claude 3 Haiku</text>
+
+  <rect x="786" y="366" width="165" height="65" rx="10" fill="#e0e7ff" stroke="#a5b4fc" stroke-width="1.5"/>
+  <text x="868" y="388" text-anchor="middle" font-size="12" font-weight="700" fill="#3730a3">Gemini API</text>
+  <text x="868" y="405" text-anchor="middle" font-size="10" fill="#4338ca">Gemini 1.5 Pro · Flash</text>
+  <text x="868" y="421" text-anchor="middle" font-size="10" fill="#4338ca">Gemini 1.0 Pro</text>
+
+  <!-- Proxy → AI 버스 -->
+  <line x1="730" y1="308" x2="762" y2="308" stroke="#6366f1" stroke-width="1.5" stroke-dasharray="5,3"/>
+  <line x1="762" y1="235" x2="762" y2="400" stroke="#6366f1" stroke-width="1" stroke-dasharray="4,3"/>
+  <line x1="762" y1="235" x2="786" y2="235" stroke="#6366f1" stroke-width="1.5" stroke-dasharray="5,3" marker-end="url(#arr-purple)"/>
+  <line x1="762" y1="317" x2="786" y2="317" stroke="#6366f1" stroke-width="1.5" stroke-dasharray="5,3" marker-end="url(#arr-purple)"/>
+  <line x1="762" y1="400" x2="786" y2="400" stroke="#6366f1" stroke-width="1.5" stroke-dasharray="5,3" marker-end="url(#arr-purple)"/>
+  <rect x="732" y="292" width="68" height="14" rx="3" fill="#ede9fe"/>
+  <text x="766" y="303" text-anchor="middle" font-size="9" fill="#7c3aed" font-weight="600">API 포워딩</text>
+
+  <!-- ══ 범례 ══ -->
+  <rect x="42" y="560" width="918" height="100" rx="10" fill="white" stroke="#e2e8f0" stroke-width="1"/>
+  <text x="501" y="578" text-anchor="middle" font-size="11" font-weight="700" fill="#475569">범례</text>
+
+  <rect x="60" y="588" width="12" height="12" rx="2" fill="#dbeafe" stroke="#93c5fd" stroke-width="1"/>
+  <text x="78" y="599" font-size="10" fill="#475569">클라이언트</text>
+
+  <rect x="178" y="588" width="12" height="12" rx="2" fill="#f0fdf4" stroke="#4ade80" stroke-width="1"/>
+  <text x="196" y="599" font-size="10" fill="#475569">Vercel CDN</text>
+
+  <rect x="296" y="588" width="12" height="12" rx="2" fill="#dcfce7" stroke="#86efac" stroke-width="1"/>
+  <text x="314" y="599" font-size="10" fill="#475569">Nginx (API 전용)</text>
+
+  <rect x="446" y="588" width="12" height="12" rx="2" fill="#fff7ed" stroke="#fdba74" stroke-width="1"/>
+  <text x="464" y="599" font-size="10" fill="#475569">Django</text>
+
+  <rect x="546" y="588" width="12" height="12" rx="2" fill="#fce7f3" stroke="#f9a8d4" stroke-width="1"/>
+  <text x="564" y="599" font-size="10" fill="#475569">데이터 레이어</text>
+
+  <rect x="676" y="588" width="12" height="12" rx="2" fill="#fff1f2" stroke="#ef4444" stroke-width="1"/>
+  <text x="694" y="599" font-size="10" fill="#475569">Redis Streams</text>
+
+  <rect x="806" y="588" width="12" height="12" rx="2" fill="#e0e7ff" stroke="#a5b4fc" stroke-width="1"/>
+  <text x="824" y="599" font-size="10" fill="#475569">외부 AI API</text>
+
+  <line x1="60" y1="620" x2="95" y2="620" stroke="#94a3b8" stroke-width="1.5" marker-end="url(#arr)"/>
+  <text x="102" y="624" font-size="10" fill="#475569">내부 통신</text>
+
+  <line x1="210" y1="620" x2="245" y2="620" stroke="#ef4444" stroke-width="1.5" stroke-dasharray="4,2" marker-end="url(#arr-red)"/>
+  <text x="252" y="624" font-size="10" fill="#475569">보안 이벤트 pub/sub</text>
+
+  <line x1="430" y1="620" x2="465" y2="620" stroke="#16a34a" stroke-width="1.5" stroke-dasharray="4,2" marker-end="url(#arr-green)"/>
+  <text x="472" y="624" font-size="10" fill="#475569">WS push</text>
+
+  <line x1="600" y1="620" x2="635" y2="620" stroke="#6366f1" stroke-width="1.5" stroke-dasharray="5,3" marker-end="url(#arr-purple)"/>
+  <text x="642" y="624" font-size="10" fill="#475569">AI API 포워딩</text>
+
+  <text x="501" y="648" text-anchor="middle" font-size="10" fill="#94a3b8">
+    Vercel: 프론트 배포 (정적파일 CDN)  ·  EC2: 백엔드 전용 (API + WebSocket + DB)  ·  Nginx: 정적파일 서빙 불필요
+  </text>
+</svg>
+</body>
+</html>

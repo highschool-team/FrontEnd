@@ -3,42 +3,70 @@ import { useUser } from '../context/UserContext';
 
 const TEAM_COLORS = ['#4285f4', '#34a853', '#7c3aed', '#f9ab00', '#e91e63'];
 
+const PROVIDER_MODELS = {
+  OpenAI:    [
+    { name: 'GPT-4o',      cost: 3 },
+    { name: 'GPT-4o-mini', cost: 2 },
+    { name: 'o3-mini',     cost: 1 },
+  ],
+  Anthropic: [
+    { name: 'Claude Opus 4.7',   cost: 3 },
+    { name: 'Claude Sonnet 4.6', cost: 2 },
+    { name: 'Claude Haiku 4.5',  cost: 1 },
+  ],
+  Gemini: [
+    { name: 'Gemini 2.5 Pro',   cost: 3 },
+    { name: 'Gemini 2.5 Flash', cost: 2 },
+    { name: 'Gemini 2.0 Flash', cost: 1 },
+  ],
+  Mistral: [
+    { name: 'Mistral Large', cost: 3 },
+    { name: 'Mistral Small', cost: 1 },
+  ],
+  Cohere: [
+    { name: 'Command R+', cost: 3 },
+    { name: 'Command R',  cost: 1 },
+  ],
+};
+
+const ALL_MODELS = (provName) => PROVIDER_MODELS[provName]?.map((m) => m.name) ?? [];
+
 const INITIAL_TEAMS = [
   {
     id: 1, team: '프론트엔드팀', budget: 50, spent: 11.2,
     providers: [
-      { name: 'OpenAI',    model: 'GPT-4o',      color: '#10a37f', spent: 8.2,  limit: 25 },
-      { name: 'Anthropic', model: 'Claude 3.5',  color: '#d97757', spent: 2.1,  limit: 15 },
-      { name: 'Gemini',    model: 'Gemini 1.5',  color: '#7c3aed', spent: 0.9,  limit: 10 },
+      { name: 'OpenAI',    model: 'GPT-4o',           color: '#10a37f', spent: 8.2,  limit: 25, allowedModels: ALL_MODELS('OpenAI') },
+      { name: 'Anthropic', model: 'Claude Sonnet 4.6', color: '#d97757', spent: 2.1,  limit: 15, allowedModels: ALL_MODELS('Anthropic') },
+      { name: 'Gemini',    model: 'Gemini 2.5 Pro',   color: '#7c3aed', spent: 0.9,  limit: 10, allowedModels: ALL_MODELS('Gemini') },
     ],
   },
   {
     id: 2, team: '백엔드팀', budget: 30, spent: 27.8,
     providers: [
-      { name: 'Anthropic', model: 'Claude 3.5',  color: '#d97757', spent: 18.4, limit: 20 },
-      { name: 'OpenAI',    model: 'GPT-4o',      color: '#10a37f', spent: 9.4,  limit: 10 },
+      { name: 'Anthropic', model: 'Claude Sonnet 4.6', color: '#d97757', spent: 18.4, limit: 20, allowedModels: ['Claude Sonnet 4.6', 'Claude Haiku 4.5'] },
+      { name: 'OpenAI',    model: 'GPT-4o',            color: '#10a37f', spent: 9.4,  limit: 10, allowedModels: ALL_MODELS('OpenAI') },
     ],
   },
   {
     id: 3, team: '데이터팀', budget: 100, spent: 8.4,
     providers: [
-      { name: 'OpenAI',    model: 'GPT-4o',      color: '#10a37f', spent: 5.8,  limit: 60 },
-      { name: 'Gemini',    model: 'Gemini 1.5',  color: '#7c3aed', spent: 1.8,  limit: 25 },
-      { name: 'Anthropic', model: 'Claude 3.5',  color: '#d97757', spent: 0.8,  limit: 15 },
+      { name: 'OpenAI',    model: 'GPT-4o',           color: '#10a37f', spent: 5.8,  limit: 60, allowedModels: ALL_MODELS('OpenAI') },
+      { name: 'Gemini',    model: 'Gemini 2.5 Flash', color: '#7c3aed', spent: 1.8,  limit: 25, allowedModels: ALL_MODELS('Gemini') },
+      { name: 'Anthropic', model: 'Claude Sonnet 4.6', color: '#d97757', spent: 0.8,  limit: 15, allowedModels: ALL_MODELS('Anthropic') },
     ],
   },
   {
     id: 4, team: 'QA팀', budget: 20, spent: 18.1,
     providers: [
-      { name: 'OpenAI',    model: 'GPT-4o-mini', color: '#10a37f', spent: 14.2, limit: 15 },
-      { name: 'Anthropic', model: 'Claude 3.5',  color: '#d97757', spent: 3.9,  limit: 5  },
+      { name: 'OpenAI',    model: 'GPT-4o-mini',      color: '#10a37f', spent: 14.2, limit: 15, allowedModels: ['GPT-4o-mini', 'o3-mini'] },
+      { name: 'Anthropic', model: 'Claude Haiku 4.5', color: '#d97757', spent: 3.9,  limit: 5,  allowedModels: ['Claude Sonnet 4.6', 'Claude Haiku 4.5'] },
     ],
   },
   {
     id: 5, team: '모바일 앱 팀', budget: 40, spent: 6.7,
     providers: [
-      { name: 'Anthropic', model: 'Claude 3.5',  color: '#d97757', spent: 4.8,  limit: 25 },
-      { name: 'OpenAI',    model: 'GPT-4o-mini', color: '#10a37f', spent: 1.9,  limit: 15 },
+      { name: 'Anthropic', model: 'Claude Sonnet 4.6', color: '#d97757', spent: 4.8,  limit: 25, allowedModels: ALL_MODELS('Anthropic') },
+      { name: 'OpenAI',    model: 'GPT-4o-mini',      color: '#10a37f', spent: 1.9,  limit: 15, allowedModels: ['GPT-4o-mini', 'o3-mini'] },
     ],
   },
 ];
@@ -181,13 +209,38 @@ function TechLeadView({ teams, setTeams, simulating, startSim, stopSim, companyB
   const updateTeamBudget = (id, val) =>
     setTeams((prev) => prev.map((t) => t.id === id ? { ...t, budget: val } : t));
 
-  const updateProviderLimit = (teamId, provName, val) =>
-    setTeams((prev) => prev.map((t) =>
-      t.id !== teamId ? t : {
+  const toggleModel = (teamId, provName, modelName) =>
+    setTeams((prev) => prev.map((t) => {
+      if (t.id !== teamId) return t;
+      return {
         ...t,
-        providers: t.providers.map((p) => p.name === provName ? { ...p, limit: val } : p),
-      }
-    ));
+        providers: t.providers.map((p) => {
+          if (p.name !== provName) return p;
+          const isAllowed = p.allowedModels.includes(modelName);
+          // 마지막 하나는 해제 불가
+          if (isAllowed && p.allowedModels.length === 1) return p;
+          return {
+            ...p,
+            allowedModels: isAllowed
+              ? p.allowedModels.filter((m) => m !== modelName)
+              : [...p.allowedModels, modelName],
+          };
+        }),
+      };
+    }));
+
+  const updateProviderLimit = (teamId, provName, val) =>
+    setTeams((prev) => prev.map((t) => {
+      if (t.id !== teamId) return t;
+      const otherSum   = t.providers.filter((p) => p.name !== provName).reduce((s, p) => s + p.limit, 0);
+      const maxAllowed = Math.max(0, t.budget - otherSum);
+      return {
+        ...t,
+        providers: t.providers.map((p) =>
+          p.name === provName ? { ...p, limit: Math.min(val, maxAllowed) } : p,
+        ),
+      };
+    }));
 
   return (
     <>
@@ -286,30 +339,60 @@ function TechLeadView({ teams, setTeams, simulating, startSim, stopSim, companyB
                   {t.providers.map((prov) => {
                     const pp       = pct(prov.spent, prov.limit);
                     const barColor = pp >= 100 ? '#ea4335' : pp >= 80 ? '#f9ab00' : prov.color;
+                    const otherSum = t.providers.filter((p) => p.name !== prov.name).reduce((s, p) => s + p.limit, 0);
+                    const provMax  = Math.max(1, t.budget - otherSum);
+                    const models   = PROVIDER_MODELS[prov.name] ?? [];
+                    const COST_LABEL = { 3: '$$$', 2: '$$', 1: '$' };
+                    const COST_COLOR = { 3: '#ea4335', 2: '#f9ab00', 1: '#34a853' };
                     return (
-                      <div key={prov.name} className="quota-prov-row">
-                        <div className="quota-prov-info">
-                          <span style={{ width: 9, height: 9, borderRadius: '50%', background: prov.color, flexShrink: 0 }} />
-                          <span style={{ fontWeight: 700, fontSize: 13 }}>{prov.name}</span>
-                          <span style={{ fontSize: 12, color: '#5f6368' }}>{prov.model}</span>
-                        </div>
-
-                        <div className="quota-slider-wrap">
-                          <input type="range" min={1} max={t.budget} value={prov.limit}
-                            className="quota-slider quota-slider--colored"
-                            style={{ '--prov-color': prov.color }}
-                            onChange={(e) => updateProviderLimit(t.id, prov.name, Number(e.target.value))} />
-                          <span className="quota-budget-val" style={{ color: prov.color }}>${prov.limit}</span>
-                        </div>
-
-                        <div className="quota-spent-wrap">
-                          <div className="quota-bar-bg">
-                            <div style={{ width: `${pp}%`, height: '100%', background: barColor, borderRadius: 4, transition: 'width 0.1s linear' }} />
+                      <div key={prov.name} className="quota-prov-section">
+                        <div className="quota-prov-row">
+                          <div className="quota-prov-info">
+                            <span style={{ width: 9, height: 9, borderRadius: '50%', background: prov.color, flexShrink: 0 }} />
+                            <span style={{ fontWeight: 700, fontSize: 13 }}>{prov.name}</span>
                           </div>
-                          <span className="quota-spent-label">
-                            ${prov.spent.toFixed(1)} / ${prov.limit} ({pp.toFixed(0)}%)
-                          </span>
+
+                          <div className="quota-slider-wrap">
+                            <input type="range" min={1} max={provMax} value={prov.limit}
+                              className="quota-slider quota-slider--colored"
+                              style={{ '--prov-color': prov.color }}
+                              onChange={(e) => updateProviderLimit(t.id, prov.name, Number(e.target.value))} />
+                            <span className="quota-budget-val" style={{ color: prov.color }}>${prov.limit}</span>
+                          </div>
+
+                          <div className="quota-spent-wrap">
+                            <div className="quota-bar-bg">
+                              <div style={{ width: `${pp}%`, height: '100%', background: barColor, borderRadius: 4, transition: 'width 0.1s linear' }} />
+                            </div>
+                            <span className="quota-spent-label">
+                              ${prov.spent.toFixed(1)} / ${prov.limit} ({pp.toFixed(0)}%)
+                            </span>
+                          </div>
                         </div>
+
+                        {/* 모델 허용/차단 토글 */}
+                        {models.length > 0 && (
+                          <div className="model-chip-row">
+                            <span className="model-chip-label">허용 모델</span>
+                            {models.map((m) => {
+                              const allowed = prov.allowedModels.includes(m.name);
+                              return (
+                                <button
+                                  key={m.name}
+                                  className={`model-chip ${allowed ? 'model-chip--on' : 'model-chip--off'}`}
+                                  onClick={() => toggleModel(t.id, prov.name, m.name)}
+                                  title={allowed ? '클릭하면 차단' : '클릭하면 허용'}
+                                >
+                                  <span className="model-cost-badge" style={{ color: COST_COLOR[m.cost] }}>
+                                    {COST_LABEL[m.cost]}
+                                  </span>
+                                  {m.name}
+                                  <span className="model-chip-icon">{allowed ? '✓' : '✗'}</span>
+                                </button>
+                              );
+                            })}
+                          </div>
+                        )}
                       </div>
                     );
                   })}
@@ -341,18 +424,55 @@ function TechLeadView({ teams, setTeams, simulating, startSim, stopSim, companyB
 }
 
 /* ── 파트장 뷰 ── */
-function PartLeadView({ teams, myTeam }) {
+function PartLeadView({ teams, setTeams, myTeam }) {
   const myTeamData = teams.find((t) => t.team === myTeam);
   if (!myTeamData) return null;
+
   const p      = pct(myTeamData.spent, myTeamData.budget);
-  const status = statusOf(myTeamData.spent, myTeamData.budget);
+  const status = statusOf(myTeamData.spent, myTeamData.budget, myTeamData.providers);
+  const provSum = myTeamData.providers.reduce((s, p) => s + p.limit, 0);
+
+  const COST_LABEL = { 3: '$$$', 2: '$$', 1: '$' };
+  const COST_COLOR = { 3: '#ea4335', 2: '#f9ab00', 1: '#34a853' };
+
+  const updateProviderLimit = (provName, val) =>
+    setTeams((prev) => prev.map((t) => {
+      if (t.team !== myTeam) return t;
+      const otherSum   = t.providers.filter((p) => p.name !== provName).reduce((s, p) => s + p.limit, 0);
+      const maxAllowed = Math.max(0, t.budget - otherSum);
+      return {
+        ...t,
+        providers: t.providers.map((p) =>
+          p.name === provName ? { ...p, limit: Math.min(val, maxAllowed) } : p,
+        ),
+      };
+    }));
+
+  const toggleModel = (provName, modelName) =>
+    setTeams((prev) => prev.map((t) => {
+      if (t.team !== myTeam) return t;
+      return {
+        ...t,
+        providers: t.providers.map((p) => {
+          if (p.name !== provName) return p;
+          const isAllowed = p.allowedModels.includes(modelName);
+          if (isAllowed && p.allowedModels.length === 1) return p;
+          return {
+            ...p,
+            allowedModels: isAllowed
+              ? p.allowedModels.filter((m) => m !== modelName)
+              : [...p.allowedModels, modelName],
+          };
+        }),
+      };
+    }));
 
   return (
     <>
       <div className="page-header">
         <div>
           <h1 className="page-title">API 할당 제어</h1>
-          <p className="page-sub">{myTeam} 팀의 예산 현황 및 팀원별 사용량을 확인합니다</p>
+          <p className="page-sub">{myTeam} · 제공사별 한도 및 허용 모델을 설정합니다</p>
         </div>
       </div>
 
@@ -360,33 +480,93 @@ function PartLeadView({ teams, myTeam }) {
         <div className="stat-card"><span className="stat-value blue">${myTeamData.budget}</span><span className="stat-label">팀 일일 예산</span></div>
         <div className="stat-card"><span className="stat-value orange">${myTeamData.spent.toFixed(1)}</span><span className="stat-label">오늘 소비</span></div>
         <div className="stat-card"><span className="stat-value">{p.toFixed(0)}%</span><span className="stat-label">예산 소진율</span></div>
-        <div className="stat-card"><span className={`stat-value ${status === 'BLOCKED' ? 'red' : status === 'WARNING' ? 'orange' : 'green'}`}>{status}</span><span className="stat-label">상태</span></div>
+        <div className="stat-card">
+          <span className={`stat-value ${status === 'BLOCKED' ? 'red' : status === 'WARNING' ? 'orange' : 'green'}`}>{status}</span>
+          <span className="stat-label">상태</span>
+        </div>
       </div>
 
-      <div className="analytics-card" style={{ marginBottom: 24 }}>
+      {/* 팀 전체 소비 바 */}
+      <div className="analytics-card" style={{ marginBottom: 20 }}>
+        <p style={{ fontWeight: 700, fontSize: 14, marginBottom: 10 }}>팀 예산 소진 현황</p>
         <SegmentedBar providers={myTeamData.providers} budget={myTeamData.budget} height={12} />
-        <p style={{ fontSize: 13, color: '#5f6368', marginTop: 8, marginBottom: 16 }}>
+        <p style={{ fontSize: 13, color: '#5f6368', marginTop: 8 }}>
           ${myTeamData.spent.toFixed(1)} / ${myTeamData.budget} ({p.toFixed(0)}%)
         </p>
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
-          {myTeamData.providers.map((prov) => {
-            const pp = pct(prov.spent, prov.limit);
-            return (
-              <div key={prov.name} style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: 6, minWidth: 110 }}>
-                  <span style={{ width: 8, height: 8, borderRadius: '50%', background: prov.color, flexShrink: 0 }} />
-                  <span style={{ fontSize: 13, fontWeight: 600 }}>{prov.name}</span>
+      </div>
+
+      {/* 제공사별 한도 + 모델 설정 */}
+      <div className="quota-table" style={{ marginBottom: 24 }}>
+        <div className="quota-table-header" style={{ gridTemplateColumns: '120px 1fr 200px' }}>
+          <span>제공사</span><span>한도 설정 ($)</span><span>오늘 소비</span>
+        </div>
+
+        {myTeamData.providers.map((prov) => {
+          const pp       = pct(prov.spent, prov.limit);
+          const barColor = pp >= 100 ? '#ea4335' : pp >= 80 ? '#f9ab00' : prov.color;
+          const otherSum = myTeamData.providers.filter((p) => p.name !== prov.name).reduce((s, p) => s + p.limit, 0);
+          const provMax  = Math.max(1, myTeamData.budget - otherSum);
+          const models   = PROVIDER_MODELS[prov.name] ?? [];
+
+          return (
+            <div key={prov.name} className="quota-prov-section" style={{ padding: '14px 20px' }}>
+              {/* 제공사 행 */}
+              <div style={{ display: 'grid', gridTemplateColumns: '120px 1fr 200px', gap: 16, alignItems: 'center' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 7 }}>
+                  <span style={{ width: 9, height: 9, borderRadius: '50%', background: prov.color, flexShrink: 0 }} />
+                  <span style={{ fontWeight: 700, fontSize: 13 }}>{prov.name}</span>
                 </div>
-                <span style={{ fontSize: 12, color: '#5f6368', minWidth: 90 }}>{prov.model}</span>
-                <div className="quota-bar-bg" style={{ flex: 1, height: 6, borderRadius: 3 }}>
-                  <div style={{ width: `${pp}%`, height: '100%', background: prov.color, borderRadius: 3 }} />
+
+                <div className="quota-slider-wrap">
+                  <input type="range" min={1} max={provMax} value={prov.limit}
+                    className="quota-slider quota-slider--colored"
+                    style={{ '--prov-color': prov.color }}
+                    onChange={(e) => updateProviderLimit(prov.name, Number(e.target.value))} />
+                  <span className="quota-budget-val" style={{ color: prov.color }}>${prov.limit}</span>
                 </div>
-                <span style={{ fontSize: 12, color: '#5f6368', minWidth: 90, textAlign: 'right' }}>
-                  ${prov.spent.toFixed(1)} / ${prov.limit}
-                </span>
+
+                <div className="quota-spent-wrap">
+                  <div className="quota-bar-bg">
+                    <div style={{ width: `${pp}%`, height: '100%', background: barColor, borderRadius: 4, transition: 'width 0.1s' }} />
+                  </div>
+                  <span className="quota-spent-label">${prov.spent.toFixed(1)} ({pp.toFixed(0)}%)</span>
+                </div>
               </div>
-            );
-          })}
+
+              {/* 모델 토글 */}
+              {models.length > 0 && (
+                <div className="model-chip-row" style={{ paddingLeft: 16 }}>
+                  <span className="model-chip-label">허용 모델</span>
+                  {models.map((m) => {
+                    const allowed = prov.allowedModels.includes(m.name);
+                    return (
+                      <button
+                        key={m.name}
+                        className={`model-chip ${allowed ? 'model-chip--on' : 'model-chip--off'}`}
+                        onClick={() => toggleModel(prov.name, m.name)}
+                        title={allowed ? '클릭하면 차단' : '클릭하면 허용'}
+                      >
+                        <span className="model-cost-badge" style={{ color: COST_COLOR[m.cost] }}>
+                          {COST_LABEL[m.cost]}
+                        </span>
+                        {m.name}
+                        <span className="model-chip-icon">{allowed ? '✓' : '✗'}</span>
+                      </button>
+                    );
+                  })}
+                </div>
+              )}
+            </div>
+          );
+        })}
+
+        <div className={`quota-expanded-footer ${provSum > myTeamData.budget ? 'footer--warn' : provSum === myTeamData.budget ? 'footer--ok' : ''}`}
+          style={{ margin: '0 16px 16px', borderRadius: 8 }}>
+          {provSum > myTeamData.budget
+            ? `⚠ 제공사 합계 $${provSum}가 팀 예산 $${myTeamData.budget}를 초과합니다`
+            : provSum === myTeamData.budget
+            ? `✓ 팀 예산 $${myTeamData.budget} 배분 완료`
+            : `잔여 $${myTeamData.budget - provSum} 미배분`}
         </div>
       </div>
 
@@ -538,7 +718,7 @@ export default function QuotaControlPage() {
           companyBudget={companyBudget} setCompanyBudget={setCompanyBudget} />
       )}
       {user.role === 'partlead' && (
-        <PartLeadView teams={teams} myTeam={user.team} />
+        <PartLeadView teams={teams} setTeams={setTeams} myTeam={user.team} />
       )}
       {user.role === 'member' && (
         <MemberView teams={teams} myTeam={user.team} myName={user.memberName} />

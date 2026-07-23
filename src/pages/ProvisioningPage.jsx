@@ -8,8 +8,9 @@ const SERVICES = [
   { id: 'notion', name: 'Notion' },
 ];
 
-const EMPLOYEES = ['홍길동', '이영희', '박민준', '김수진', '최현우'];
 const ASSIGNEES = ['김철수', '정다은', '강민서', '윤재원'];
+
+const isValidEmail = (v) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v.trim());
 
 function getSteps(mode) {
   return SERVICES.map((s, i) => ({
@@ -21,7 +22,7 @@ function getSteps(mode) {
 
 export default function ProvisioningPage() {
   const [employee, setEmployee] = useState('');
-  const [mode, setMode] = useState('off');
+  const [mode, setMode] = useState(null);
   const [running, setRunning] = useState(false);
   const [stepStatus, setStepStatus] = useState({});
   const [pausedAt, setPausedAt] = useState(null);
@@ -94,37 +95,36 @@ export default function ProvisioningPage() {
 
       <div className="prov-form">
         <div className="prov-form-row">
-          <label className="prov-label">대상 사원</label>
-          <select
-            className="prov-select"
+          <label className="prov-label">이메일</label>
+          <input
+            className="prov-email-input"
+            type="email"
+            placeholder="name@company.com"
             value={employee}
             onChange={(e) => { reset(); setEmployee(e.target.value); }}
-          >
-            <option value="">사원을 선택하세요</option>
-            {EMPLOYEES.map((e) => <option key={e} value={e}>{e}</option>)}
-          </select>
+          />
         </div>
         <div className="prov-form-row">
           <label className="prov-label">프로세스 유형</label>
           <div className="prov-mode-toggle">
-            <button
-              className={`mode-btn ${mode === 'off' ? 'mode-btn--active-red' : ''}`}
-              onClick={() => { reset(); setMode('off'); }}
-            >
-              퇴사 (Offboarding)
-            </button>
             <button
               className={`mode-btn ${mode === 'on' ? 'mode-btn--active-blue' : ''}`}
               onClick={() => { reset(); setMode('on'); }}
             >
               입사 (Onboarding)
             </button>
+            <button
+              className={`mode-btn ${mode === 'off' ? 'mode-btn--active-red' : ''}`}
+              onClick={() => { reset(); setMode('off'); }}
+            >
+              퇴사 (Offboarding)
+            </button>
           </div>
         </div>
         <button
           className={`sim-btn ${running ? 'sim-btn--stop' : ''}`}
           onClick={running ? reset : start}
-          disabled={!employee}
+          disabled={!isValidEmail(employee) || !mode}
         >
           {running ? '⏹ 중지' : `▶ ${mode === 'off' ? '퇴사' : '입사'} 프로세스 실행`}
         </button>
@@ -161,11 +161,11 @@ export default function ProvisioningPage() {
           <div className="transfer-modal">
             <h3 className="transfer-title">⚠ 자산 이관 필요 — 프로세스 일시 중지됨</h3>
             <p className="transfer-desc">
-              <strong>{employee}</strong> 사원의 Figma에 작성 중인 파일 5개가 존재합니다.
+              <strong>{employee}</strong> 계정의 Figma에 작성 중인 파일 5개가 존재합니다.
               계정 삭제 전 소유권을 이관할 담당자를 지정하세요.
             </p>
             <div className="transfer-row">
-              <span className="transfer-from">{employee}의 Figma 파일</span>
+              <span className="transfer-from">{employee} Figma 파일</span>
               <span className="transfer-arrow">→</span>
               <select
                 className="prov-select"
@@ -189,7 +189,7 @@ export default function ProvisioningPage() {
 
       {done && (
         <div className="prov-done-banner">
-          ✅ {employee} 사원 {mode === 'off' ? '퇴사' : '입사'} 프로세스가 완료되었습니다.
+          ✅ {employee} {mode === 'off' ? '퇴사' : '입사'} 프로세스가 완료되었습니다.
           {assignee && ` Figma 파일은 ${assignee}에게 이관되었습니다.`}
         </div>
       )}

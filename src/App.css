@@ -739,6 +739,56 @@ body {
   margin: 16px 0 14px;
 }
 
+.quota-prov-section { border-bottom: 1px dashed #e8ecf0; padding-bottom: 10px; margin-bottom: 10px; }
+.quota-prov-section:last-child { border-bottom: none; margin-bottom: 0; padding-bottom: 0; }
+
+.model-chip-row {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 6px;
+  padding: 8px 0 4px 2px;
+}
+.model-chip-label {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--sub);
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+  margin-right: 4px;
+  white-space: nowrap;
+}
+.model-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 4px 10px;
+  border-radius: 20px;
+  border: 1.5px solid;
+  font-size: 12px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+.model-chip--on {
+  background: #dcfce7;
+  border-color: #4ade80;
+  color: #166534;
+}
+.model-chip--on:hover { background: #bbf7d0; }
+.model-chip--off {
+  background: #f3f4f6;
+  border-color: #d1d5db;
+  color: #6b7280;
+}
+.model-chip--off:hover { background: #e5e7eb; }
+.model-cost-badge {
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: -0.5px;
+}
+.model-chip-icon { font-size: 11px; }
+
 .sim-notice {
   margin-top: 16px;
   padding: 12px 18px;
@@ -939,6 +989,18 @@ body {
   background: #fff;
   cursor: pointer;
 }
+.prov-email-input {
+  flex: 1;
+  padding: 9px 12px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  font-size: 14px;
+  color: var(--text);
+  background: #fff;
+  outline: none;
+  transition: border-color 0.15s;
+}
+.prov-email-input:focus { border-color: var(--blue); }
 .prov-mode-toggle { display: flex; gap: 8px; }
 .mode-btn {
   padding: 8px 18px;

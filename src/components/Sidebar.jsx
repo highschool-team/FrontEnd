@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { NavLink, useNavigate } from 'react-router-dom';
 import { useUser, ROLE_TABS } from '../context/UserContext';
 
+const DashIcon    = () => <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="nav-icon"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>;
 const PlugIcon    = () => <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="nav-icon"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z" /></svg>;
 const GaugeIcon   = () => <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="nav-icon"><path d="M12 2a10 10 0 1 0 10 10" /><path d="M12 6v6l4 2" /><circle cx="18" cy="6" r="3" fill="currentColor" stroke="none" /></svg>;
 const ChartIcon   = () => <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="nav-icon"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12" /></svg>;
@@ -11,13 +12,10 @@ const UsersIcon   = () => <svg viewBox="0 0 24 24" fill="none" stroke="currentCo
 const SecurityIcon= () => <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="nav-icon"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" /><line x1="12" y1="8" x2="12" y2="12" /><line x1="12" y1="16" x2="12.01" y2="16" /></svg>;
 
 const ALL_NAV = [
-  { id: 'integration', to: '/integration', label: '연동 관리',      Icon: PlugIcon     },
-  { id: 'quota',       to: '/quota',       label: 'API 할당 제어',  Icon: GaugeIcon    },
-  { id: 'analytics',  to: '/analytics',   label: '분석',            Icon: ChartIcon    },
-  { id: 'audit',      to: '/audit',       label: '계정 오딧',       Icon: ShieldIcon   },
-  { id: 'routing',    to: '/routing',     label: '라우팅 정책',     Icon: RouteIcon    },
-  { id: 'provisioning',to:'/provisioning',label: '프로비저닝',      Icon: UsersIcon    },
-  { id: 'security',   to: '/security',    label: '보안 모니터링',   Icon: SecurityIcon },
+  { id: 'dashboard', to: '/dashboard', label: '통합 대시보드',  Icon: DashIcon     },
+  { id: 'manage',    to: '/manage',    label: '관리',           Icon: PlugIcon     },
+  { id: 'audit',     to: '/audit',     label: '계정 오딧',      Icon: ShieldIcon   },
+  { id: 'security',  to: '/security',  label: '보안 모니터링',  Icon: SecurityIcon },
 ];
 
 export default function Sidebar() {

@@ -2,8 +2,8 @@ import { createContext, useContext, useState } from 'react';
 
 const IntegrationContext = createContext(null);
 
-const DEFAULT_ADDED     = new Set(['google', 'slack', 'figma', 'notion', 'github', 'jira', 'openai', 'claude', 'gemini']);
-const DEFAULT_CONNECTED = new Set(['google', 'slack', 'figma']);
+const DEFAULT_ADDED     = new Set(['google', 'slack', 'figma', 'notion', 'github', 'jira', 'claude', 'gemini']);
+const DEFAULT_CONNECTED = new Set(['google', 'slack', 'figma', 'claude', 'gemini']);
 
 export function IntegrationProvider({ children }) {
   const [added, setAdded]         = useState(DEFAULT_ADDED);

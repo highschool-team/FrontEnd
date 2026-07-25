@@ -1,0 +1,469 @@
+.db-root {
+  position: fixed;
+  inset: 0;
+  z-index: 200;
+  background: #07070f;
+  color: #e2e8f0;
+  overflow-y: auto;
+  font-family: 'Segoe UI', system-ui, sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ── Header ── */
+.db-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 24px;
+  border-bottom: 1px solid #1a1a2e;
+  position: sticky;
+  top: 0;
+  background: #07070f;
+  z-index: 10;
+}
+.db-header-right { display: flex; align-items: center; gap: 10px; }
+
+.db-brand {
+  font-size: 22px;
+  font-weight: 800;
+  color: #00e87a;
+  letter-spacing: -0.5px;
+  font-family: 'Courier New', monospace;
+}
+.db-brand-sub { font-size: 11px; color: #475569; margin-top: 3px; }
+
+.db-live-badge {
+  background: #0a1f12;
+  color: #4ade80;
+  border: 1px solid #4ade8044;
+  border-radius: 20px;
+  padding: 4px 14px;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.3px;
+}
+
+.db-close-btn {
+  background: #12121f;
+  border: 1px solid #1e1e35;
+  color: #475569;
+  cursor: pointer;
+  width: 30px;
+  height: 30px;
+  border-radius: 6px;
+  font-size: 13px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.15s, color 0.15s;
+}
+.db-close-btn:hover { background: #1e1e35; color: #e2e8f0; }
+
+/* ── Period tabs ── */
+.db-period-tabs { display: flex; gap: 4px; }
+.db-period-tab {
+  background: transparent;
+  border: 1px solid #1e1e35;
+  color: #475569;
+  border-radius: 6px;
+  padding: 3px 10px;
+  font-size: 11px;
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s;
+}
+.db-period-tab:hover { background: #1a1a2e; color: #94a3b8; }
+.db-period-tab--active { background: #1a1a2e; color: #e2e8f0; border-color: #334155; }
+
+/* ── Body layout ── */
+.db-body { padding: 18px 24px; display: flex; flex-direction: column; gap: 14px; }
+
+.db-top-grid {
+  display: grid;
+  grid-template-columns: 1.45fr 1fr;
+  gap: 14px;
+}
+
+/* ── Card ── */
+.db-card {
+  background: #0d0d1c;
+  border: 1px solid #1a1a2e;
+  border-radius: 10px;
+  padding: 18px 20px;
+}
+
+.db-card-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 10px;
+}
+.db-card-eyebrow { font-size: 10px; color: #475569; font-family: 'Courier New', monospace; margin-bottom: 2px; }
+.db-card-title   { font-size: 14px; font-weight: 700; color: #e2e8f0; font-family: 'Courier New', monospace; }
+
+/* ── Chart annotations ── */
+.db-chart-wrap { position: relative; }
+
+.db-annotation {
+  position: absolute;
+  background: #fb923c18;
+  border: 1px solid #fb923c44;
+  border-radius: 5px;
+  padding: 2px 7px;
+  font-size: 10px;
+  color: #fb923c;
+  pointer-events: none;
+  white-space: nowrap;
+}
+.db-annotation--blue {
+  background: #60a5fa18;
+  border-color: #60a5fa44;
+  color: #7dd3fc;
+}
+.db-annotation--red {
+  background: #f8717118;
+  border-color: #f8717144;
+  color: #f87171;
+}
+
+/* ── Team legend ── */
+.db-team-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 14px;
+  margin-top: 12px;
+  padding-top: 12px;
+  border-top: 1px solid #1a1a2e;
+}
+.db-legend-item { display: flex; align-items: center; gap: 5px; font-size: 11px; }
+.db-legend-dot  { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+
+/* ── Alert bar ── */
+.db-alert-bar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: center;
+  margin-top: 10px;
+  padding-top: 10px;
+  border-top: 1px solid #1a1a2e;
+  font-size: 11px;
+  color: #64748b;
+}
+.db-alert-sep { color: #334155; }
+
+/* ── Donut panel ── */
+.db-donut-row   { display: flex; gap: 16px; align-items: center; margin-bottom: 14px; }
+.db-donut-wrap  { position: relative; width: 158px; height: 158px; flex-shrink: 0; }
+
+.db-donut-center {
+  position: absolute;
+  top: 50%; left: 50%;
+  transform: translate(-50%, -50%);
+  text-align: center;
+  pointer-events: none;
+}
+.db-donut-pct { display: block; font-size: 24px; font-weight: 800; color: #e2e8f0; }
+.db-donut-sub { display: block; font-size: 9px;  color: #475569; margin-top: 2px; line-height: 1.3; }
+
+.db-donut-info  { flex: 1; display: flex; flex-direction: column; gap: 10px; }
+
+.db-info-box {
+  padding: 10px 12px;
+  background: #0a0a16;
+  border: 1px solid #1a1a2e;
+  border-radius: 8px;
+}
+.db-savings-box {
+  padding: 10px 12px;
+  background: #061210;
+  border: 1px solid #4ade8030;
+  border-radius: 8px;
+}
+.db-savings-amt { font-size: 20px; font-weight: 800; color: #4ade80; font-family: 'Courier New', monospace; margin: 4px 0 2px; }
+
+.db-provider-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding-top: 14px;
+  border-top: 1px solid #1a1a2e;
+}
+.db-provider-row { display: flex; align-items: center; gap: 10px; }
+.db-provider-dot  { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+.db-provider-name { font-size: 13px; font-weight: 600; color: #e2e8f0; width: 62px; }
+.db-provider-pct  { font-size: 13px; font-weight: 700; width: 40px; }
+.db-provider-meta { font-size: 11px; color: #475569; }
+
+/* ── Employee table ── */
+.db-table-scroll { overflow-x: auto; }
+
+.db-table-head,
+.db-table-row {
+  display: grid;
+  grid-template-columns: 90px 148px 82px 68px 68px 68px 1fr 154px 96px;
+  gap: 6px;
+  align-items: center;
+  padding: 8px 4px;
+}
+.db-table-head {
+  font-size: 11px;
+  color: #475569;
+  border-bottom: 1px solid #1a1a2e;
+  padding-bottom: 10px;
+  font-weight: 600;
+}
+.db-table-row {
+  font-size: 12px;
+  border-bottom: 1px solid #0f0f1e;
+}
+.db-table-row:last-child { border-bottom: none; }
+
+.db-emp-name { font-weight: 700; color: #e2e8f0; font-size: 13px; }
+
+.db-team-badge {
+  display: inline-block;
+  padding: 2px 8px;
+  border-radius: 20px;
+  font-size: 10px;
+  font-weight: 600;
+  border: 1px solid;
+  white-space: nowrap;
+}
+
+.db-key-done { color: #4ade80; font-size: 11px; }
+.db-key-proc { color: #fb923c; font-size: 11px; }
+.db-key-none { color: #2a2a45; font-size: 12px; }
+
+.db-status {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 2px 8px;
+  border-radius: 20px;
+  font-size: 10px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+.db-status--done { background: #4ade8016; color: #4ade80; }
+.db-status--proc { background: #fb923c16; color: #fb923c; }
+
+/* ── Loading ── */
+.db-loading {
+  height: 280px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 13px;
+  color: #475569;
+}
+
+.db-legend-guide {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 10px;
+  color: #475569;
+  margin-top: 2px;
+}
+
+/* ── Tooltip ── */
+.db-tt {
+  background: #0d0d1c;
+  border: 1px solid #1a1a2e;
+  border-radius: 8px;
+  padding: 8px 12px;
+  font-size: 11px;
+}
+.db-tt-label { color: #475569; margin-bottom: 4px; font-weight: 600; }
+
+/* ── Team status bars ── */
+.db-team-status-grid {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 10px;
+  margin-bottom: 14px;
+}
+.db-team-status-card {
+  background: #0a0a16;
+  border: 1px solid #1a1a2e;
+  border-radius: 8px;
+  padding: 10px 12px;
+}
+.db-team-status-header {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 8px;
+}
+.db-team-status-name {
+  font-size: 12px;
+  font-weight: 700;
+  flex: 1;
+}
+.db-team-status-zone {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.2px;
+}
+.db-team-status-bar-bg {
+  height: 5px;
+  background: #1a1a2e;
+  border-radius: 3px;
+  overflow: hidden;
+  margin-bottom: 7px;
+}
+.db-team-status-bar-fill {
+  height: 100%;
+  border-radius: 3px;
+  transition: width 0.4s ease;
+}
+.db-team-status-meta {
+  display: flex;
+  justify-content: space-between;
+  font-size: 11px;
+}
+
+/* ── Team model usage & limit ── */
+.db-team-model-list {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+.db-team-model-row {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.db-team-model-header {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.db-team-model-name {
+  font-size: 12px;
+  font-weight: 700;
+  flex: 1;
+}
+.db-model-bar-wrap {
+  display: flex;
+  height: 6px;
+  border-radius: 3px;
+  overflow: hidden;
+  background: #1a1a2e;
+}
+.db-model-bar-seg {
+  height: 100%;
+  transition: width 0.3s ease;
+}
+.db-model-labels {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+.db-model-label {
+  font-size: 10px;
+  font-weight: 600;
+}
+.db-limit-ctrl {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  flex-shrink: 0;
+}
+.db-limit-value {
+  font-size: 13px;
+  font-weight: 700;
+  color: #e2e8f0;
+  font-family: 'Courier New', monospace;
+  margin-right: 2px;
+}
+.db-limit-input {
+  width: 58px;
+  background: #0a0a16;
+  border: 1px solid #334155;
+  border-radius: 4px;
+  color: #e2e8f0;
+  font-size: 12px;
+  padding: 2px 6px;
+  text-align: right;
+}
+.db-limit-input:focus { outline: none; border-color: #4ade80; }
+.db-limit-btn {
+  background: #12121f;
+  border: 1px solid #1e1e35;
+  color: #475569;
+  cursor: pointer;
+  padding: 2px 8px;
+  border-radius: 4px;
+  font-size: 11px;
+  transition: background 0.15s, color 0.15s;
+}
+.db-limit-btn:hover { background: #1e1e35; color: #94a3b8; }
+.db-limit-btn--save { border-color: #4ade8040; color: #4ade80; }
+.db-limit-btn--save:hover { background: #0a1f12; }
+
+/* ── Member table ── */
+.db-team-filter { display: flex; gap: 4px; flex-wrap: wrap; }
+.db-team-filter-btn {
+  background: transparent;
+  border: 1px solid #1e1e35;
+  color: #475569;
+  border-radius: 6px;
+  padding: 3px 10px;
+  font-size: 11px;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+.db-team-filter-btn:hover { background: #1a1a2e; color: #94a3b8; }
+.db-team-filter-btn--active { background: #1a1a2e; }
+
+.db-member-head,
+.db-member-row {
+  display: grid;
+  grid-template-columns: 72px 100px 100px 100px 90px 1fr;
+  gap: 6px;
+  align-items: center;
+  padding: 8px 4px;
+}
+.db-member-head {
+  font-size: 11px;
+  color: #475569;
+  font-weight: 600;
+  border-bottom: 1px solid #1a1a2e;
+  padding-bottom: 10px;
+}
+.db-member-row {
+  font-size: 12px;
+  border-bottom: 1px solid #0f0f1e;
+}
+.db-member-row:last-child { border-bottom: none; }
+
+.db-pct-bar {
+  height: 4px;
+  background: #1a1a2e;
+  border-radius: 2px;
+  overflow: hidden;
+  margin-bottom: 3px;
+}
+.db-pct-fill {
+  height: 100%;
+  border-radius: 2px;
+  transition: width 0.3s ease;
+}
+
+/* ── Zone legend ── */
+.db-zone-legend {
+  display: flex;
+  gap: 14px;
+  margin-top: 8px;
+  padding-top: 8px;
+  border-top: 1px solid #1a1a2e;
+}
+.db-zone-item {
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.2px;
+}
+.db-zone--safe { color: #4ade80; }
+.db-zone--warn { color: #fb923c; }
+.db-zone--over { color: #f87171; }

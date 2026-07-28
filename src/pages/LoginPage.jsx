@@ -26,7 +26,7 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="page" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: '100vh' }}>
+    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: '100vh', width: '100%' }}>
       <div className="analytics-card" style={{ width: '100%', maxWidth: 400, padding: '40px 36px' }}>
         <h1 className="page-title" style={{ marginBottom: 8, fontSize: 24 }}>FinOps Guard</h1>
         <p className="page-sub" style={{ marginBottom: 28 }}>계정 이메일과 비밀번호로 로그인하세요</p>

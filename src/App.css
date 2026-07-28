@@ -217,17 +217,24 @@ body {
   gap: 18px;
 }
 .provider-card {
-  background: var(--card);
-  border: 1px solid var(--border);
+  background: linear-gradient(145deg, #101022 0%, #0d0d1c 100%);
+  border: 1px solid #1e1e35;
   border-radius: 14px;
   padding: 22px;
   display: flex;
   flex-direction: column;
   gap: 10px;
-  transition: box-shadow 0.15s;
+  transition: box-shadow 0.18s, border-color 0.18s;
 }
-.provider-card:hover { box-shadow: 0 2px 12px rgba(0,0,0,0.6); }
-.provider-card--connected { border-color: #4ade8060; }
+.provider-card:hover {
+  box-shadow: 0 4px 20px rgba(0,0,0,0.5);
+  border-color: #2a2a48;
+}
+.provider-card--connected {
+  border-color: #4ade8030;
+  background: linear-gradient(145deg, #0d1a14 0%, #0d0d1c 100%);
+}
+.provider-card--connected:hover { border-color: #4ade8055; }
 
 /* ── 연동 관리 카테고리 탭 ── */
 .integration-tabs {
@@ -285,9 +292,9 @@ body {
   padding: 2px 8px;
   border-radius: 20px;
 }
-.cat--ai { background: var(--purple-light); color: var(--purple); }
-.cat--saas { background: var(--blue-light); color: var(--blue); }
-.cat--dev { background: #fef3c7; color: #92400e; }
+.cat--ai   { background: #a78bfa14; color: #a78bfa; }
+.cat--saas { background: #60a5fa14; color: #60a5fa; }
+.cat--dev  { background: #f59e0b14; color: #f59e0b; }
 
 /* ── 카드 삭제 버튼 ── */
 .card-remove-btn {
@@ -307,7 +314,7 @@ body {
 
 /* ── 추가 카드 버튼 ── */
 .provider-add-card {
-  border: 2px dashed var(--border);
+  border: 1.5px dashed #1e1e35;
   border-radius: 14px;
   background: transparent;
   cursor: pointer;
@@ -317,12 +324,12 @@ body {
   justify-content: center;
   gap: 10px;
   min-height: 180px;
-  transition: border-color 0.15s, background 0.15s;
+  transition: border-color 0.18s, background 0.18s;
 }
-.provider-add-card:hover { border-color: #00e87a; background: #00e87a10; }
-.provider-add-icon { font-size: 28px; color: var(--sub); }
+.provider-add-card:hover { border-color: #00e87a50; background: #00e87a08; }
+.provider-add-icon { font-size: 24px; color: #2a2a48; transition: color 0.18s; }
 .provider-add-card:hover .provider-add-icon { color: #00e87a; }
-.provider-add-label { font-size: 13px; color: var(--sub); font-weight: 500; }
+.provider-add-label { font-size: 13px; color: #334155; font-weight: 500; transition: color 0.18s; }
 .provider-add-card:hover .provider-add-label { color: #00e87a; }
 
 /* ── 모달 ── */
@@ -428,7 +435,10 @@ body {
   color: #fff;
   font-weight: 700;
   font-size: 13px;
+  filter: saturate(0.7) brightness(0.85);
+  transition: filter 0.18s;
 }
+.provider-card:hover .provider-logo { filter: saturate(0.9) brightness(0.95); }
 .provider-name { font-size: 15px; font-weight: 700; }
 .provider-desc { font-size: 13px; color: var(--sub); flex: 1; }
 .provider-btn {

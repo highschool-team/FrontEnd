@@ -329,7 +329,9 @@ export default function IntegrationPage() {
   const addedList   = CATALOG.filter((p) => added.has(p.id));
   const catalogList = CATALOG.filter((p) => !added.has(p.id));
 
-  const visibleAdded   = addedList.filter((p) => category === 'all' || p.category === category);
+  const visibleAdded   = addedList
+    .filter((p) => category === 'all' || p.category === category)
+    .sort((a, b) => (connected.has(b.id) ? 1 : 0) - (connected.has(a.id) ? 1 : 0));
   const visibleCatalog = catalogList.filter((p) => modalCat === 'all' || p.category === modalCat);
 
   const countAdded = (key) =>

@@ -2,7 +2,7 @@ import { createContext, useContext } from 'react'
 import { useAuth } from './AuthContext'
 
 export const ROLE_TABS = {
-  techlead: ['dashboard', 'manage', 'audit'],
+  techlead: ['manage', 'dashboard', 'security'],
   partlead: [],
   member:   [],
   devops:   ['dashboard', 'security'],

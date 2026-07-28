@@ -1,10 +1,12 @@
 import { useState } from 'react';
 import IntegrationPage from './IntegrationPage';
 import ProvisioningPage from './ProvisioningPage';
+import AccountAuditPage from './AccountAuditPage';
 
 const TABS = [
   { key: 'integration',  label: '연동 관리' },
   { key: 'provisioning', label: '프로비저닝' },
+  { key: 'audit',        label: '계정 오딧' },
 ];
 
 export default function ManagePage() {
@@ -21,7 +23,9 @@ export default function ManagePage() {
           >{t.label}</button>
         ))}
       </div>
-      {tab === 'integration' ? <IntegrationPage /> : <ProvisioningPage />}
+      {tab === 'integration'  && <IntegrationPage />}
+      {tab === 'provisioning' && <ProvisioningPage />}
+      {tab === 'audit'        && <AccountAuditPage />}
     </div>
   );
 }

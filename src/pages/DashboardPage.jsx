@@ -1,5 +1,4 @@
 import { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
 import {
   ComposedChart, Area, Line,
   XAxis, YAxis, CartesianGrid, Tooltip,
@@ -29,7 +28,7 @@ const RAW_DATA = {
   daily: {
     labels: ['00시','01시','02시','03시','04시','05시','06시','07시','08시','09시','10시','11시','12시','13시','14시','15시','16시','17시','18시','19시','20시','21시','22시','23시'],
     joinIdx: 18,
-    front:  [0.3,0.2,0.1,0.1,0.2,0.4,0.8,1.6,3.5,5.2,5.8,6.1,3.8,5.5,6.8,7.0,6.2,5.0,3.8],
+    front:  [0.3,0.2,0.1,0.1,0.2,0.4,0.8,1.6,3.5,5.2,5.8,6.1,3.8,5.5,6.8,15.2,21.4,19.8,14.6],
     back:   [0.4,0.2,0.1,0.1,0.3,0.6,1.2,2.2,4.8,7.1,8.0,8.4,5.2,7.6,9.3,9.6,8.5,6.9,5.2],
     data:   [0.2,0.1,0.1,0.1,0.1,0.3,0.6,1.2,2.6,3.9,4.4,4.6,2.9,4.2,5.1,5.3,4.7,3.8,2.9],
     qa:     [0.1,0.1,0.0,0.0,0.1,0.2,0.4,0.8,1.8,2.6,2.9,3.1,1.9,2.8,3.4,3.6,3.2,2.5,1.9],
@@ -113,7 +112,7 @@ const PERIOD_META = {
 
 /* Y축 도메인 */
 const PERIOD_DOMAIN = {
-  daily:   [0, 12],
+  daily:   [0, 24],
   weekly:  [0, 110],
   monthly: [0, 430],
 };
@@ -127,6 +126,34 @@ const TEAM_MODEL_USAGE = [
   { id: 'mobile', models: [{ name: 'Claude', pct: 55, color: '#fbbf24' }, { name: 'GPT-4o', pct: 45, color: '#f472b6' }] },
 ];
 const DEFAULT_LIMITS = { front: 70, back: 100, data: 55, qa: 40, mobile: 65 };
+
+const ALL_MODEL_TYPES = [
+  { id: 'claude',  name: 'Claude',  color: '#d97757', logo: 'AC', models: [
+    { id: 'claude-opus-4',   label: 'Opus 4',      tier: '고가' },
+    { id: 'claude-sonnet-4', label: 'Sonnet 4',    tier: '중가' },
+    { id: 'claude-haiku-4',  label: 'Haiku 4',     tier: '저가' },
+  ]},
+  { id: 'gpt4o',   name: 'GPT-4o',  color: '#10a37f', logo: 'OA', models: [
+    { id: 'gpt-4o',          label: 'GPT-4o',      tier: '고가' },
+    { id: 'gpt-4o-mini',     label: 'GPT-4o mini', tier: '저가' },
+  ]},
+  { id: 'gemini',  name: 'Gemini',  color: '#7c3aed', logo: 'GM', models: [
+    { id: 'gemini-2.5-pro',  label: '2.5 Pro',     tier: '고가' },
+    { id: 'gemini-1.5-pro',  label: '1.5 Pro',     tier: '중가' },
+    { id: 'gemini-2.0-flash',label: '2.0 Flash',   tier: '저가' },
+  ]},
+];
+
+const TIER_COLOR = { '고가': '#f87171', '중가': '#fb923c', '저가': '#4ade80' };
+
+// 팀별 기본 허용 모델 (세부 모델 ID 단위)
+const DEFAULT_ALLOWED_MODELS = {
+  front:  new Set(['claude-sonnet-4', 'claude-haiku-4', 'gemini-1.5-flash']),
+  back:   new Set(['claude-opus-4', 'claude-sonnet-4', 'gpt-4o', 'gpt-4o-mini']),
+  data:   new Set(['claude-sonnet-4', 'gemini-1.5-pro', 'gemini-2.0-flash', 'gpt-4o-mini']),
+  qa:     new Set(['claude-haiku-4', 'gemini-1.5-flash']),
+  mobile: new Set(['claude-sonnet-4', 'gpt-4o-mini']),
+};
 
 const MEMBER_USAGE = {
   front:  [
@@ -189,38 +216,139 @@ function ChartTooltip({ active, payload, label, meta }) {
 
 /* ── main ── */
 export default function DashboardPage() {
-  const navigate  = useNavigate();
-  const [period, setPeriod]     = useState('monthly');
+  const [period, setPeriod]     = useState('daily');
   const [overview, setOverview] = useState(null);
 
   useEffect(() => {
     api.get('/dashboard/overview/').then(({ data }) => setOverview(data)).catch(() => {});
   }, []);
 
+  const [selectedTeam, setSelectedTeam] = useState('front');
+
   const [limits, setLimits]         = useState(DEFAULT_LIMITS);
   const [editingId, setEditingId]   = useState(null);
   const [draftLimit, setDraftLimit] = useState('');
-  const [selectedTeam, setSelectedTeam] = useState('front');
+  const [expandedTeam, setExpandedTeam] = useState(null);
+  const [allowedModels, setAllowedModels] = useState(DEFAULT_ALLOWED_MODELS);
 
-  const chartData = buildChartData(period);
-  const meta      = PERIOD_META[period];
-  const [, yMax]  = PERIOD_DOMAIN[period];
+  const toggleModel = (teamId, modelId) => {
+    setAllowedModels(prev => {
+      const next = new Set(prev[teamId]);
+      next.has(modelId) ? next.delete(modelId) : next.add(modelId);
+      return { ...prev, [teamId]: next };
+    });
+  };
+
+  // ── 시뮬레이션 ──
+  const [simProgress, setSimProgress] = useState(0);
+  const [blockedTeams, setBlockedTeams] = useState(new Set());
+  const [incidentAlert, setIncidentAlert] = useState(false);
+
+  // 페이지 진입 시 자동 시작
+  useEffect(() => {
+    const tid = setInterval(() => {
+      setSimProgress(p => {
+        const next = +(p + 0.008).toFixed(4);
+        if (next >= 1) { clearInterval(tid); return 1; }
+        return next;
+      });
+    }, 50);
+    return () => clearInterval(tid);
+  }, []);
+
+  const SIM_END        = { front: 152, back: 71, data: 68, qa: 73, mobile: 70 };
+  const DAILY_BUDGETS  = { front: 70, back: 100, data: 55, qa: 40, mobile: 65 };
+
+  // 예산 바: 0에서 최종값까지 채워짐
+  const liveMeta = PERIOD_META[period].map(m => {
+    if (period !== 'daily') return m;
+    const end    = SIM_END[m.id];
+    const pct    = Math.min(Math.round(end * simProgress), 100);
+    const budget = DAILY_BUDGETS[m.id];
+    const cost   = +(budget * pct / 100).toFixed(1);
+    return { ...m, pct, spent: `$${cost}` };
+  });
+
+  // 예산 초과 팀 차단 감지 + 인시던트 감지
+  useEffect(() => {
+    if (period !== 'daily') return;
+    liveMeta.forEach(m => {
+      if (m.pct >= 100 && !blockedTeams.has(m.id)) {
+        setBlockedTeams(prev => new Set([...prev, m.id]));
+      }
+    });
+    // 15시 이후 프론트팀 급증 감지 (simCurrentIdx >= 15)
+    if (simProgress >= 0.625 && !incidentAlert) {
+      setIncidentAlert(true);
+    }
+  }, [simProgress]);
+
+  const fullChartData = buildChartData(period);
   const { labels, joinIdx } = RAW_DATA[period];
-  const joinLabel = labels[joinIdx];
+
+  // clip-path로 좌→우 공개: 데이터 고정이므로 곡선 모양 불변
+  const simCurrentIdx  = Math.floor(simProgress * labels.length);
+  const chartClipRight = ((1 - simProgress) * 100).toFixed(2); // 오른쪽 숨김 %
+  const liveJoinLabel  = simCurrentIdx <= joinIdx
+    ? labels[Math.max(simCurrentIdx - 1, 0)]
+    : labels[joinIdx];
+
+  const meta         = liveMeta;
+  const [, yMax]     = PERIOD_DOMAIN[period];
+  const joinLabel    = liveJoinLabel;
+  const blockedCount = blockedTeams.size;
 
   return (
-    <div className="db-root">
-      {/* ── Header ── */}
-      <header className="db-header">
+    <div className="page db-root" style={{ maxWidth: 1600 }}>
+      <div className="page-header">
         <div>
-          <h1 className="db-brand">FinOps Guard</h1>
-          <p className="db-brand-sub">사내 AI 사용 모니터링 · 비용 하드레일 · 보안 오프보딩 통합 대시보드</p>
+          <h1 className="page-title">AI 현황</h1>
+          <p className="page-sub">사내 AI 사용 모니터링 · 비용 하드레일 · 팀별 한도 관리</p>
         </div>
-        <div className="db-header-right">
-          <span className="db-live-badge">● LIVE</span>
-          <button className="db-close-btn" onClick={() => navigate('/manage')} title="닫기">✕</button>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+          {blockedCount > 0 && (
+            <span style={{ fontSize: 11, fontWeight: 700, color: '#f87171', background: '#f8717118', border: '1px solid #f8717144', borderRadius: 20, padding: '2px 10px' }}>
+              ⚠ {blockedCount}팀 차단
+            </span>
+          )}
+          <span className="db-live-badge" style={{ opacity: simProgress < 1 ? 1 : 0.5 }}>
+            {simProgress < 1 ? '● LIVE' : '● 완료'}
+          </span>
         </div>
-      </header>
+      </div>
+
+      {/* 1단계: 이상 징후 감지 */}
+      {incidentAlert && (
+        <div style={{
+          background: '#12100a', border: '1px solid #fb923c44', borderLeft: '3px solid #fb923c',
+          borderRadius: 8, padding: '10px 16px', marginBottom: 4,
+          display: 'flex', alignItems: 'center', gap: 12,
+        }}>
+          <span style={{ fontSize: 16 }}>⚠️</span>
+          <div style={{ flex: 1 }}>
+            <span style={{ fontSize: 12, fontWeight: 700, color: '#fb923c' }}>프론트팀 API 호출 이상 감지 · </span>
+            <span style={{ fontSize: 12, color: '#94a3b8' }}>
+              15시 이후 요청량 급증 — 모델 미지정으로 기본값 <strong style={{ color: '#fbbf24' }}>Claude Opus 4</strong> 적용 중. 로컬 환경 문제로 오인한 반복 재시도가 비용을 누적시키고 있습니다.
+            </span>
+          </div>
+        </div>
+      )}
+      {/* 2단계: 예산 초과 자동 차단 */}
+      {blockedTeams.size > 0 && (
+        <div style={{
+          background: '#1a0a0a', border: '1px solid #f8717144', borderLeft: '3px solid #f87171',
+          borderRadius: 8, padding: '10px 16px', marginBottom: 4,
+          display: 'flex', alignItems: 'center', gap: 12,
+        }}>
+          <span style={{ fontSize: 16 }}>🚨</span>
+          <div style={{ flex: 1 }}>
+            <span style={{ fontSize: 12, fontWeight: 700, color: '#f87171' }}>예산 초과 자동 차단 · </span>
+            <span style={{ fontSize: 12, color: '#94a3b8' }}>
+              {[...blockedTeams].map(id => MOCK_TEAMS.find(t => t.id === id)?.name).join(', ')}이(가) 일일 한도를 초과하여 API 호출이 차단되었습니다.
+            </span>
+          </div>
+        </div>
+      )}
 
       <div className="db-body">
         <div className="db-top-grid">
@@ -252,10 +380,11 @@ export default function DashboardPage() {
               {MOCK_TEAMS.map(t => {
                 const m = meta.find(x => x.id === t.id);
                 const pct = m?.pct ?? 0;
-                const zoneColor = pct >= 100 ? '#ef4444' : pct >= 80 ? '#f97316' : '#22c55e';
-                const zoneName  = pct >= 100 ? '초과' : pct >= 80 ? '주의' : '안전';
+                const isBlocked = blockedTeams.has(t.id);
+                const zoneColor = isBlocked ? '#ef4444' : pct >= 100 ? '#ef4444' : pct >= 80 ? '#f97316' : '#22c55e';
+                const zoneName  = isBlocked ? '차단' : pct >= 100 ? '초과' : pct >= 80 ? '주의' : '안전';
                 return (
-                  <div key={t.id} className="db-team-status-card">
+                  <div key={t.id} className="db-team-status-card" style={isBlocked ? { borderColor: '#ef444444', background: '#1a0a0a' } : {}}>
                     <div className="db-team-status-header">
                       <span className="db-legend-dot" style={{ background: t.color }} />
                       <span className="db-team-status-name" style={{ color: t.color }}>{t.name}</span>
@@ -277,74 +406,78 @@ export default function DashboardPage() {
             </div>
 
             <div className="db-chart-wrap">
-              <ResponsiveContainer width="100%" height={300}>
-                <ComposedChart
-                  data={chartData}
-                  margin={{ top: 28, right: 24, left: -4, bottom: 0 }}
-                >
-                  <defs>
+              <div style={{ clipPath: `inset(0 ${chartClipRight}% 0 0)` }}>
+                <ResponsiveContainer width="100%" height={300}>
+                  <ComposedChart
+                    data={fullChartData}
+                    margin={{ top: 28, right: 24, left: -4, bottom: 0 }}
+                  >
+                    <defs>
+                      {MOCK_TEAMS.map(t => (
+                        <linearGradient key={t.id} id={`grad_${t.id}`} x1="0" y1="0" x2="0" y2="1">
+                          <stop offset="5%"  stopColor={t.color} stopOpacity={0.28} />
+                          <stop offset="95%" stopColor={t.color} stopOpacity={0.02} />
+                        </linearGradient>
+                      ))}
+                    </defs>
+
+                    <CartesianGrid strokeDasharray="3 3" stroke="#131325" />
+                    <XAxis
+                      dataKey="w"
+                      tick={{ fontSize: 11, fill: '#475569' }}
+                      axisLine={false} tickLine={false}
+                      interval={period === 'daily' ? 2 : 0}
+                    />
+                    <YAxis
+                      tick={{ fontSize: 11, fill: '#475569' }}
+                      axisLine={false} tickLine={false}
+                      tickFormatter={v => `$${v}`}
+                      domain={[0, yMax]}
+                      width={44}
+                    />
+                    <Tooltip content={<ChartTooltip meta={meta} />} />
+
+                    {/* 현재 시점 구분선 */}
+                    <ReferenceLine
+                      x={joinLabel}
+                      stroke="#334155" strokeWidth={1.4} strokeDasharray="3 3"
+                      label={{ value: '현재', position: 'insideTopRight', fontSize: 10, fill: '#64748b', dy: -12 }}
+                    />
+
+                    {/* 실제 데이터: Area */}
                     {MOCK_TEAMS.map(t => (
-                      <linearGradient key={t.id} id={`grad_${t.id}`} x1="0" y1="0" x2="0" y2="1">
-                        <stop offset="5%"  stopColor={t.color} stopOpacity={0.28} />
-                        <stop offset="95%" stopColor={t.color} stopOpacity={0.02} />
-                      </linearGradient>
+                      <Area
+                        key={`${t.id}_a`}
+                        type="monotone"
+                        dataKey={`${t.id}_a`}
+                        stroke={t.color}
+                        strokeWidth={2}
+                        fill={`url(#grad_${t.id})`}
+                        dot={false}
+                        activeDot={{ r: 4, fill: t.color, stroke: '#07070f', strokeWidth: 2 }}
+                        connectNulls={false}
+                        isAnimationActive={false}
+                      />
                     ))}
-                  </defs>
 
-                  <CartesianGrid strokeDasharray="3 3" stroke="#131325" />
-                  <XAxis
-                    dataKey="w"
-                    tick={{ fontSize: 11, fill: '#475569' }}
-                    axisLine={false} tickLine={false}
-                    interval={period === 'daily' ? 2 : 0}
-                  />
-                  <YAxis
-                    tick={{ fontSize: 11, fill: '#475569' }}
-                    axisLine={false} tickLine={false}
-                    tickFormatter={v => `$${v}`}
-                    domain={[0, yMax]}
-                    width={44}
-                  />
-                  <Tooltip content={<ChartTooltip meta={meta} />} />
-
-                  {/* 현재 시점 구분선 */}
-                  <ReferenceLine
-                    x={joinLabel}
-                    stroke="#334155" strokeWidth={1.4} strokeDasharray="3 3"
-                    label={{ value: '현재', position: 'insideTopRight', fontSize: 10, fill: '#64748b', dy: -12 }}
-                  />
-
-                  {/* 실제 데이터: Area */}
-                  {MOCK_TEAMS.map(t => (
-                    <Area
-                      key={`${t.id}_a`}
-                      type="monotone"
-                      dataKey={`${t.id}_a`}
-                      stroke={t.color}
-                      strokeWidth={2}
-                      fill={`url(#grad_${t.id})`}
-                      dot={false}
-                      activeDot={{ r: 4, fill: t.color, stroke: '#07070f', strokeWidth: 2 }}
-                      connectNulls={false}
-                    />
-                  ))}
-
-                  {/* 예측 데이터: 점선 Line */}
-                  {MOCK_TEAMS.map(t => (
-                    <Line
-                      key={`${t.id}_p`}
-                      type="monotone"
-                      dataKey={`${t.id}_p`}
-                      stroke={t.color}
-                      strokeWidth={1.8}
-                      strokeDasharray="6 3"
-                      strokeOpacity={0.65}
-                      dot={false}
-                      connectNulls={false}
-                    />
-                  ))}
-                </ComposedChart>
-              </ResponsiveContainer>
+                    {/* 예측 데이터: 점선 Line */}
+                    {MOCK_TEAMS.map(t => (
+                      <Line
+                        key={`${t.id}_p`}
+                        type="monotone"
+                        dataKey={`${t.id}_p`}
+                        stroke={t.color}
+                        strokeWidth={1.8}
+                        strokeDasharray="6 3"
+                        strokeOpacity={0.65}
+                        dot={false}
+                        connectNulls={false}
+                        isAnimationActive={false}
+                      />
+                    ))}
+                  </ComposedChart>
+                </ResponsiveContainer>
+              </div>
             </div>
 
             {/* 팀 범례 */}
@@ -366,13 +499,15 @@ export default function DashboardPage() {
 
             {/* 이벤트 요약 */}
             <div className="db-alert-bar">
-              <span>자동 차단 <strong style={{ color: '#f87171' }}>1건</strong></span>
+              <span>자동 차단 <strong style={{ color: '#f87171' }}>{blockedCount}건</strong></span>
               <span className="db-alert-sep">·</span>
-              <span>모델 다운그레이드 <strong style={{ color: '#fb923c' }}>2건</strong></span>
+              <span>예산 초과 팀 <strong style={{ color: '#fb923c' }}>{liveMeta.filter(m => m.pct >= 100).length}팀</strong></span>
               <span className="db-alert-sep">·</span>
               <span>전체 예산 <strong style={{ color: '#4ade80' }}>${(overview?.company_budget ?? 1330)}</strong></span>
               <span className="db-alert-sep">·</span>
-              <span>총 소비 <strong style={{ color: '#fb923c' }}>${(overview?.total_spent ?? 933)}</strong></span>
+              <span>총 소비 <strong style={{ color: blockedCount > 0 ? '#f87171' : '#fb923c' }}>
+                ${liveMeta.reduce((s, m) => s + parseFloat(m.spent.replace(/[$,]/g, '')), 0).toFixed(0)}
+              </strong></span>
             </div>
           </div>
 
@@ -380,23 +515,31 @@ export default function DashboardPage() {
           <div className="db-card">
             <div className="db-card-head">
               <div>
-                <p className="db-card-eyebrow">모델별 사용 비율 · 일일 예산 한도</p>
+                <p className="db-card-eyebrow">일일 예산 한도 · 팀 클릭 시 허용 모델 설정</p>
                 <p className="db-card-title">팀 모델 사용량 & 한도 설정</p>
               </div>
             </div>
 
             <div className="db-team-model-list">
               {MOCK_TEAMS.map(t => {
-                const usage    = TEAM_MODEL_USAGE.find(u => u.id === t.id);
-                const isEditing = editingId === t.id;
-                const limit    = limits[t.id];
+                const usage      = TEAM_MODEL_USAGE.find(u => u.id === t.id);
+                const isEditing  = editingId === t.id;
+                const limit      = limits[t.id];
+                const isExpanded = expandedTeam === t.id;
+                const allowed    = allowedModels[t.id] ?? new Set();
+
                 return (
                   <div key={t.id} className="db-team-model-row">
-                    <div className="db-team-model-header">
+                    {/* 팀 헤더 행 */}
+                    <div
+                      className="db-team-model-header"
+                      style={{ cursor: 'pointer' }}
+                      onClick={() => setExpandedTeam(isExpanded ? null : t.id)}
+                    >
                       <span className="db-legend-dot" style={{ background: t.color }} />
                       <span className="db-team-model-name" style={{ color: t.color }}>{t.name}</span>
                       {isEditing ? (
-                        <div className="db-limit-ctrl">
+                        <div className="db-limit-ctrl" onClick={e => e.stopPropagation()}>
                           <span style={{ fontSize: 11, color: '#475569' }}>$</span>
                           <input
                             className="db-limit-input"
@@ -406,43 +549,92 @@ export default function DashboardPage() {
                             autoFocus
                           />
                           <span style={{ fontSize: 11, color: '#475569' }}>/일</span>
-                          <button
-                            className="db-limit-btn db-limit-btn--save"
-                            onClick={() => {
-                              setLimits(prev => ({ ...prev, [t.id]: +draftLimit || prev[t.id] }));
-                              setEditingId(null);
-                            }}
-                          >저장</button>
+                          <button className="db-limit-btn db-limit-btn--save" onClick={() => {
+                            setLimits(prev => ({ ...prev, [t.id]: +draftLimit || prev[t.id] }));
+                            setEditingId(null);
+                          }}>저장</button>
                         </div>
                       ) : (
-                        <div className="db-limit-ctrl">
+                        <div className="db-limit-ctrl" onClick={e => e.stopPropagation()}>
                           <span className="db-limit-value">
                             ${limit}<span style={{ fontSize: 10, color: '#475569' }}>/일</span>
                           </span>
-                          <button
-                            className="db-limit-btn"
-                            onClick={() => { setEditingId(t.id); setDraftLimit(String(limit)); }}
-                          >편집</button>
+                          <button className="db-limit-btn" onClick={() => {
+                            setEditingId(t.id); setDraftLimit(String(limit));
+                          }}>편집</button>
                         </div>
                       )}
+                      <span style={{ fontSize: 10, color: '#334155', marginLeft: 6 }}>
+                        {isExpanded ? '▲' : '▼'}
+                      </span>
                     </div>
+
+                    {/* 모델 사용 비율 바 */}
                     <div className="db-model-bar-wrap">
                       {usage.models.map(m => (
-                        <div
-                          key={m.name}
-                          className="db-model-bar-seg"
-                          style={{ width: `${m.pct}%`, background: m.color }}
-                          title={`${m.name}: ${m.pct}%`}
-                        />
+                        <div key={m.name} className="db-model-bar-seg"
+                          style={{ width: `${m.pct * simProgress}%`, background: m.color }}
+                          title={`${m.name}: ${Math.round(m.pct * simProgress)}%`} />
                       ))}
                     </div>
                     <div className="db-model-labels">
                       {usage.models.map(m => (
                         <span key={m.name} className="db-model-label" style={{ color: m.color }}>
-                          ■ {m.name} {m.pct}%
+                          ■ {m.name} {Math.round(m.pct * simProgress)}%
                         </span>
                       ))}
                     </div>
+
+                    {/* 허용 모델 설정 (펼침) */}
+                    {isExpanded && (
+                      <div style={{ marginTop: 10, padding: '12px', background: '#07070f', borderRadius: 8, border: '1px solid #1a1a2e', display: 'flex', flexDirection: 'column', gap: 10 }}>
+                        <p style={{ fontSize: 10, color: '#475569', fontWeight: 600 }}>사용 허용 모델</p>
+                        {ALL_MODEL_TYPES.map(provider => (
+                          <div key={provider.id}>
+                            {/* 제공사 헤더 */}
+                            <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 6 }}>
+                              <div style={{
+                                width: 20, height: 20, borderRadius: 4, background: provider.color,
+                                display: 'flex', alignItems: 'center', justifyContent: 'center',
+                                fontSize: 7, fontWeight: 800, color: '#fff', flexShrink: 0,
+                              }}>{provider.logo}</div>
+                              <span style={{ fontSize: 11, fontWeight: 700, color: provider.color }}>{provider.name}</span>
+                            </div>
+                            {/* 세부 모델 토글 */}
+                            <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap', paddingLeft: 26 }}>
+                              {provider.models.map(mo => {
+                                const on = allowed.has(mo.id);
+                                return (
+                                  <button
+                                    key={mo.id}
+                                    onClick={e => { e.stopPropagation(); toggleModel(t.id, mo.id); }}
+                                    style={{
+                                      display: 'flex', alignItems: 'center', gap: 5,
+                                      padding: '4px 9px', borderRadius: 5, cursor: 'pointer',
+                                      fontSize: 11, fontWeight: 600,
+                                      border: `1px solid ${on ? provider.color + '66' : '#1e1e35'}`,
+                                      background: on ? provider.color + '15' : '#0d0d1c',
+                                      color: on ? '#e2e8f0' : '#334155',
+                                      transition: 'all 0.15s',
+                                    }}
+                                  >
+                                    <span style={{
+                                      fontSize: 9, fontWeight: 700, padding: '1px 5px', borderRadius: 3,
+                                      background: on ? TIER_COLOR[mo.tier] + '22' : '#1a1a2e',
+                                      color: on ? TIER_COLOR[mo.tier] : '#334155',
+                                    }}>{mo.tier}</span>
+                                    {mo.label}
+                                    <span style={{ fontSize: 10, color: on ? '#4ade80' : '#334155' }}>
+                                      {on ? '✓' : '✕'}
+                                    </span>
+                                  </button>
+                                );
+                              })}
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    )}
                   </div>
                 );
               })}
@@ -478,26 +670,32 @@ export default function DashboardPage() {
               <span>팀 예산 기여율</span>
             </div>
             {MEMBER_USAGE[selectedTeam].map(m => {
-              const teamColor = MOCK_TEAMS.find(t => t.id === selectedTeam)?.color ?? '#60a5fa';
+              const teamColor  = MOCK_TEAMS.find(t => t.id === selectedTeam)?.color ?? '#60a5fa';
+              const p          = simProgress;
+              const livePct    = Math.round(m.pct * p);
+              const liveCost   = `$${(parseFloat(m.cost.replace('$', '')) * p).toFixed(1)}`;
+              const liveClaude = m.claude === '—' ? '—' : `${(parseFloat(m.claude) * p).toFixed(2)}M`;
+              const liveGemini = m.gemini === '—' ? '—' : `${(parseFloat(m.gemini) * p).toFixed(2)}M`;
+              const liveGpt4o  = m.gpt4o  === '—' ? '—' : `${(parseFloat(m.gpt4o)  * p).toFixed(2)}M`;
               return (
                 <div key={m.name} className="db-member-row">
                   <span className="db-emp-name">{m.name}</span>
-                  <span style={{ color: '#fbbf24' }}>{m.claude}</span>
-                  <span style={{ color: m.gemini === '—' ? '#334155' : '#34d399' }}>{m.gemini}</span>
-                  <span style={{ color: m.gpt4o  === '—' ? '#334155' : '#f472b6' }}>{m.gpt4o}</span>
-                  <span style={{ color: '#e2e8f0', fontWeight: 600, fontFamily: 'Courier New' }}>{m.cost}</span>
+                  <span style={{ color: '#fbbf24' }}>{liveClaude}</span>
+                  <span style={{ color: m.gemini === '—' ? '#334155' : '#34d399' }}>{liveGemini}</span>
+                  <span style={{ color: m.gpt4o  === '—' ? '#334155' : '#f472b6' }}>{liveGpt4o}</span>
+                  <span style={{ color: '#e2e8f0', fontWeight: 600, fontFamily: 'Courier New' }}>{liveCost}</span>
                   <span>
                     <div className="db-pct-bar">
-                      <div className="db-pct-fill" style={{ width: `${m.pct}%`, background: teamColor }} />
+                      <div className="db-pct-fill" style={{ width: `${livePct}%`, background: teamColor }} />
                     </div>
-                    <span style={{ fontSize: 10, color: '#94a3b8' }}>{m.pct}%</span>
+                    <span style={{ fontSize: 10, color: '#94a3b8' }}>{livePct}%</span>
                   </span>
                 </div>
               );
             })}
           </div>
           {(() => {
-            const tm = PERIOD_META.daily.find(m => m.id === selectedTeam);
+            const tm = liveMeta.find(m => m.id === selectedTeam);
             const members = MEMBER_USAGE[selectedTeam];
             return (
               <div className="db-alert-bar">

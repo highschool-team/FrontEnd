@@ -12,9 +12,8 @@ const UsersIcon   = () => <svg viewBox="0 0 24 24" fill="none" stroke="currentCo
 const SecurityIcon= () => <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="nav-icon"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" /><line x1="12" y1="8" x2="12" y2="12" /><line x1="12" y1="16" x2="12.01" y2="16" /></svg>;
 
 const ALL_NAV = [
-  { id: 'dashboard', to: '/dashboard', label: '통합 대시보드',  Icon: DashIcon     },
-  { id: 'manage',    to: '/manage',    label: '관리',           Icon: PlugIcon     },
-  { id: 'audit',     to: '/audit',     label: '계정 오딧',      Icon: ShieldIcon   },
+  { id: 'manage',    to: '/manage',    label: '연동 관리',      Icon: PlugIcon     },
+  { id: 'dashboard', to: '/dashboard', label: 'AI 현황',        Icon: DashIcon     },
   { id: 'security',  to: '/security',  label: '보안 모니터링',  Icon: SecurityIcon },
 ];
 

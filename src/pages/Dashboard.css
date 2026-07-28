@@ -1,36 +1,8 @@
 .db-root {
-  position: fixed;
-  inset: 0;
-  z-index: 200;
-  background: #07070f;
   color: #e2e8f0;
-  overflow-y: auto;
   font-family: 'Segoe UI', system-ui, sans-serif;
   -webkit-font-smoothing: antialiased;
 }
-
-/* ── Header ── */
-.db-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 14px 24px;
-  border-bottom: 1px solid #1a1a2e;
-  position: sticky;
-  top: 0;
-  background: #07070f;
-  z-index: 10;
-}
-.db-header-right { display: flex; align-items: center; gap: 10px; }
-
-.db-brand {
-  font-size: 22px;
-  font-weight: 800;
-  color: #00e87a;
-  letter-spacing: -0.5px;
-  font-family: 'Courier New', monospace;
-}
-.db-brand-sub { font-size: 11px; color: #475569; margin-top: 3px; }
 
 .db-live-badge {
   background: #0a1f12;
@@ -42,22 +14,6 @@
   font-weight: 600;
   letter-spacing: 0.3px;
 }
-
-.db-close-btn {
-  background: #12121f;
-  border: 1px solid #1e1e35;
-  color: #475569;
-  cursor: pointer;
-  width: 30px;
-  height: 30px;
-  border-radius: 6px;
-  font-size: 13px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: background 0.15s, color 0.15s;
-}
-.db-close-btn:hover { background: #1e1e35; color: #e2e8f0; }
 
 /* ── Period tabs ── */
 .db-period-tabs { display: flex; gap: 4px; }
@@ -75,7 +31,7 @@
 .db-period-tab--active { background: #1a1a2e; color: #e2e8f0; border-color: #334155; }
 
 /* ── Body layout ── */
-.db-body { padding: 18px 24px; display: flex; flex-direction: column; gap: 14px; }
+.db-body { display: flex; flex-direction: column; gap: 14px; }
 
 .db-top-grid {
   display: grid;

@@ -30,6 +30,11 @@ export default function LoginPage() {
       <div className="analytics-card" style={{ width: '100%', maxWidth: 400, padding: '40px 36px' }}>
         <h1 className="page-title" style={{ marginBottom: 8, fontSize: 24 }}>FinOps Guard</h1>
         <p className="page-sub" style={{ marginBottom: 28 }}>계정 이메일과 비밀번호로 로그인하세요</p>
+        <div style={{ background: 'var(--hover)', borderRadius: 8, padding: '10px 14px', marginBottom: 20, fontSize: 13, color: 'var(--sub)', lineHeight: 1.7 }}>
+          테스트 계정<br />
+          이메일: tylee10@naver.com<br />
+          비밀번호: 1234
+        </div>
 
         <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
           <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
